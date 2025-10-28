@@ -102,11 +102,7 @@ class CodingVideo:
             output_path = OUT_PATH / output_path
 
         frame = self.get_frame_number_at_time(seconds)
-        self.capture.set(cv2.CAP_PROP_POS_FRAMES, frame-1)
-        ok, frame =self.capture.read()
-        if not ok:
-            raise ValueError('Unable to read data from file')
-
+        frame = self.get_frame_rgb_array(frame)
         image = Image.fromarray(frame)
         image.save(output_path)
 
