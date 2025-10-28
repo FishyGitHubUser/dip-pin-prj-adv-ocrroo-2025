@@ -51,7 +51,7 @@ Complete the steps below and fill in the `> block` sections
   > Additionally, this states the version required to run the project. 
   >
 8. The `numpy` library is required for OpenCV. Should you add an explicit requirement for it? Why/Why not?
-  > It should be added to ensure that version of OpenCV can run the behaviour of the numpy version.
+  > It should be added to ensure that the version of OpenCV can run and interpret numpy's ndarrays as intended.
   >
 9. Commit the changes so far to git. Use the message `chore: add OpenCV dependency`
 10. Go to `preliminary/library_basics.py` and complete the required functionality.
