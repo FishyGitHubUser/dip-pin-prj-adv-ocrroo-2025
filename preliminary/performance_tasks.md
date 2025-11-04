@@ -79,7 +79,7 @@ Tesseract consists of both an OCR Engine and a command line program. It is predo
 > - does it have external dependencies
 > - * Pillow>=8.0.0
 >   * packaging>=21.3
->   * python_requires = >=3.9
+>   * python_requires>=3.9
 >   
 > 
 > - how does it suite the project requirements

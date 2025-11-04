@@ -85,9 +85,6 @@ class CodingVideo:
             raise ValueError("Failed to encode frame")
         return buf.tobytes()
 
-
-
-
     def save_as_image(self, seconds: int, output_path: Path | str = 'output.png') -> None:
         """Saves the given frame as a png image using Pillow
 
@@ -106,6 +103,8 @@ class CodingVideo:
         image = Image.fromarray(frame)
         image.save(output_path)
 
+    def get_frame_at_time(self, seconds):
+        return self.get_frame_number_at_time(seconds)
 
 
 def test():
@@ -113,6 +112,7 @@ def test():
     oop = CodingVideo(VID_PATH)
     print(oop)
     oop.save_as_image(42)
+    print(oop.get_frame_at_time(10))
 
 if __name__ == '__main__':
     test()
