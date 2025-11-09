@@ -24,6 +24,9 @@ Include a brief overview of the project, include:
 > - Install OpenCV
 > `uv add opencv-python`
 > 
+> - Install FastAPI 
+> `uv add fastapi --extra standard`
+> 
 > ### Install Tesseract Wrapper
 > - Python wrappers can be found here:https://github.com/UB-Mannheim/tesseract/wiki
 > - The version currently used: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe
