@@ -16,10 +16,14 @@ from pathlib import Path
 from PIL import Image
 import cv2
 import numpy as np
-
+import pytesseract
 
 VID_PATH = Path("../resources/oop.mp4")
 OUT_PATH = Path("../resources")
+
+# Path to tesseract wrapper for Python
+pytesseract.pytesseract.tesseract_cmd = 'C:/Users/admin/AppData/Local/Programs/Tesseract-OCR/tesseract.exe'
+output_image = 'output.png'
 
 class CodingVideo:
     capture: cv2.VideoCapture
@@ -85,7 +89,7 @@ class CodingVideo:
             raise ValueError("Failed to encode frame")
         return buf.tobytes()
 
-    def save_as_image(self, seconds: int, output_path: Path | str = 'output.png') -> None:
+    def save_as_image(self, seconds: int, output_path: Path | str = output_image) -> None:
         """Saves the given frame as a png image using Pillow
 
         Reference
@@ -103,8 +107,37 @@ class CodingVideo:
         image = Image.fromarray(frame)
         image.save(output_path)
 
-    def get_frame_at_time(self, seconds):
-        return self.get_frame_number_at_time(seconds)
+    def get_image_text(self, file: str = output_image):
+        """Capture text from image using pytesseract OCR
+
+        Tesseract performs best with clean, high-quality images. Improve the input quality by resizing, converting to
+        grayscale, and applying thresholding or binarization to reduce noise and enhance contrast. This preprocessing
+        can significantly improve recognition rates.
+
+        Reference
+        ----------
+        https://www.nutrient.io/blog/how-to-use-tesseract-ocr-in-python/
+        https://www.geeksforgeeks.org/python/reading-text-from-the-image-using-tesseract/
+        """
+        output_path = OUT_PATH / file
+        if not output_path.exists():
+            return 'file not found'
+
+        # Load image into memory as NumPy ndarray
+        image = cv2.imread(output_path)
+
+        # Convert image to grayscale
+        grayscale = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+
+        # Convert grayscale image to black and white
+        (thresh, image_black_white) = cv2.threshold(grayscale, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+        # Save image
+        # image = Image.fromarray(image_black_white)
+        # filename, file_extension = file.split('.')
+        # image.save(OUT_PATH / f'{filename}-sanitised.{file_extension}')
+
+        return pytesseract.image_to_string(image_black_white, lang='eng')
 
 
 def test():
@@ -112,7 +145,7 @@ def test():
     oop = CodingVideo(VID_PATH)
     print(oop)
     oop.save_as_image(42)
-    print(oop.get_frame_at_time(10))
+    print(oop.get_image_text())
 
 if __name__ == '__main__':
     test()
