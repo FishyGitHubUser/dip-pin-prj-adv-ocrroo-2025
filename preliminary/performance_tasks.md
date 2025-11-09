@@ -109,11 +109,40 @@ FastAPI will allow us to enable communication with our OCR service from other pr
 4. Run the following curl command (may require git bash on Windows):
 `curl 127.0.0.1:8000/video`
 5. Confirm that a list of videos and URLs is returned by copying the output below:
-> Description
+> ```sh
+>   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+>                                  Dload  Upload   Total   Spent    Left  Speed
+> 100   140  100   140    0     0   7057      0 --:--:-- --:--:-- --:--:--  7368{"count":1,"videos":[{"id":"demo","path":"..\\resources\\oop.mp4","_links":{"self":"/video/demo","frame_example":"/video/demo/frame/1.0"}}]}
+> ```
+
 6. What are the names of the two processes that just communicated?
+> - Uvicorn
+> - FastAPI
 >
+> When the session shell uses the curl command, it requests data from our app's ASGI server Uvicorn. FastAPI responds to these API requests by returning a success message and a list of any videos and frames/
 6. Modify the simple_api.py so that it works correctly with your implementation and complete any TODO markers
-7. Demonstrate the use of at least two other end points below:
->
->
->
+>```sh
+>   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+>                                  Dload  Upload   Total   Spent    Left  Speed
+> 100    83  100    83    0     0    406      0 --:--:-- --:--:-- --:--:--   406"I finally saw The Matrix today.\nIt was the best documentary\nI've ever seen.\n\n"
+>```
+8. Demonstrate the use of at least two other end points below:
+> > ### Endpoint 1 (video/{vid}):
+> > $ curl http://127.0.0.1:8000/video/demo/frame/42 --output resources/output.png
+> > ```sh
+> >   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+> >                                  Dload  Upload   Total   Spent    Left  Speed
+> > 100    83  100    83    0     0   5007      0 --:--:-- --:--:-- --:--:--  5187{"fps":23.976023976023978,"frame_count":15152,"duration_seconds":631.9646666666666}
+>> ```
+> 
+> > ### Endpoint 2: (video/{vid}/frame/{t})
+> > ```sh
+> > $ curl http://127.0.0.1:8000/video/demo/frame/42 --output resources/output.png
+> >  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+> >                                  Dload  Upload   Total   Spent    Left  Speed
+> > 100  3
+> > ```
+> > 
+> > **Output File:**
+> >
+> > ![output.png](../resources/output.png)

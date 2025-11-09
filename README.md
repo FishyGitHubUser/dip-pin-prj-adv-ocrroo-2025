@@ -31,7 +31,12 @@ Include a brief overview of the project, include:
 > - Python wrappers can be found here:https://github.com/UB-Mannheim/tesseract/wiki
 > - The version currently used: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe
 > 
+> ### Run FastAPI (development mode)
+> - In your preferred shell: `uv run fastapi dev preliminary/simple_api.py`
 > 
+> ### Test Operations
+> - Open a shell session and enter: `curl 127.0.0.1:8000/video`
+> - If there's an output, you're ready to go! You can check other possible API commands at http://127.0.0.1:8000/docs.
 
 ## Who needs this?
 > This is intended, but not limited to use for assisting impaired people log video changes, specifically code examples usually not said verbally.

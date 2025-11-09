@@ -4,13 +4,12 @@ Drive the API to complete "interprocess communication"
 
 Requirements
 """
-
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi import Response
 from pydantic import BaseModel
 from pathlib import Path
-from library_basics import CodingVideo
-
+from library_basics import CodingVideo, get_image_text
 
 app = FastAPI()
 
@@ -18,8 +17,9 @@ app = FastAPI()
 # We'll create a lightweight "database" for our videos
 # You can add uploads later (not required for assessment)
 # For now, we will just hardcode are samples
+ROOT_PATH = Path(__file__).parents[1]
 VIDEOS: dict[str, Path] = {
-    "demo": Path("../resources/oop.mp4")
+    "demo": ROOT_PATH / Path("resources/oop.mp4")
 }
 
 class VideoMetaData(BaseModel):
@@ -85,4 +85,10 @@ def video_frame(vid: str, t: float):
     finally:
       video.capture.release()
 
-# TODO: add enpoint to get ocr e.g. /video/{vid}/frame/{t}/ocr
+# TODO: add endpoint to get ocr e.g. /video/{vid}/frame/{t}/ocr
+@app.get('/img/{img}/ocr')
+def image_ocr(img: str):
+    return get_image_text(img)
+
+if __name__ == '__main__':
+    print(image_ocr('output.png'))
