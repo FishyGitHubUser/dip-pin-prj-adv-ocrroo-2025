@@ -41,12 +41,29 @@ What is the user journey? What are the steps the user takes to achieve their goa
 ## UI Interaction Patterns
 
 What are the UI interaction patterns you will use in your project?
+> > - Navigating elements and app functionality should have **screen reader friendly** text that addresses its functionality.
+> > 
+> > Note: This is mandatory, but not always addressed to the level of detail required accessibility by standards.
+>  
+> > - There should be a **shortcuts** for almost all interactions a user can make with the interface. 
+> >
+> > Note: They may not be required if the element serves no purpose, or has yet to be implemented.  
+>  
+> > - Apps may have **built-in support for screen readers**, or activate system screen readers via commands.
+> > 
+> > Note: This is usually not seen in most apps, but could have the option to install OS-based screen readers directly in the app.
 > 
+> > - **Colour accessibility** is important for visually impaired users that may need additional contrast, or more distinct colour schemes.
+> >
+> > Note: Most big companies usually have support for this feature, but have it hidden under a multitude of dropdown menus.
 > 
-> Note: There should be a shortcut for almost all interactions a user can make with the interface.
+> > - **Text scaling** can also be used to reduce, or increase the text size. This is useful for addressing unique screen sizes, or visual impairments.
+> > 
+> > Note: When featured on a site, the scaling usually has a limited range that may not address the user's needs.
 
 ## AI Prompts
 
 Write down any AI prompts you came up with after your first session
-> # TODO: ASK TEACHER
-> 
+> 1. You are a professional web developer tuned for accessibility, analyse the core concepts of vision impaired accessibility then address the topics mentioned by analysing accessibility best practices. Take a break, then  double-check your answers and ensure you have addressed everything required, finally using your understanding of accessibility, include more issues that have not been addressed yet.
+>  
+> 2. Using your previous answer, create a single pure HTML page that addresses all accessibility requirements previously mentioned. Ensure the website follows strict html syntax while meeting all requirements. You may add basic css if required.  

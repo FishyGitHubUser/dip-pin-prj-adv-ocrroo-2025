@@ -23,7 +23,7 @@ OUT_PATH = ROOT_PATH / Path("resources")
 VID_PATH = OUT_PATH / Path("oop.mp4")
 
 # Path to tesseract wrapper for Python
-pytesseract.pytesseract.tesseract_cmd = 'C:/Users/admin/AppData/Local/Programs/Tesseract-OCR/tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = 'C:/Users/CASTLM/source/repos/Tesseract-OCR/tesseract.exe'
 output_image = 'output.png'
 
 class CodingVideo:
@@ -108,7 +108,32 @@ class CodingVideo:
         image = Image.fromarray(frame)
         image.save(output_path)
 
+    # TODO (personal): Add arg 'boost_contrast: bool' which enables grayscale and black-white.
+    def get_frame_text(self, frame_number: int) -> str:
+        """Capture text from specified frame using pytesseract OCR
 
+        Tesseract performs best with clean, high-quality images. Improve the input quality by resizing, converting to
+        grayscale, and applying thresholding or binarization to reduce noise and enhance contrast. This preprocessing
+        can significantly improve recognition rates.
+
+        Reference
+        ----------
+        https://www.nutrient.io/blog/how-to-use-tesseract-ocr-in-python/
+        https://www.geeksforgeeks.org/python/reading-text-from-the-image-using-tesseract/
+        """
+        frame = self.get_frame_rgb_array(frame_number)
+
+        # Convert frame to grayscale
+        frame_grayscale = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+
+        # Convert grayscale frame to black and white
+        (thresh, frame_black_white) = cv2.threshold(frame_grayscale, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+        return pytesseract.image_to_string(frame_black_white, lang='eng')
+
+
+# TODO (personal): Should receive image bytes (not a path), then return its text.
+# TODO (personal): Bad method placement, move to a class.
 def get_image_text(file: str = output_image):
     """Capture text from image using pytesseract OCR
 
@@ -146,7 +171,7 @@ def test():
     oop = CodingVideo(VID_PATH)
     print(oop)
     oop.save_as_image(42)
-    print(get_image_text())
+    print(oop.get_frame_text(1006))
 
 if __name__ == '__main__':
     test()

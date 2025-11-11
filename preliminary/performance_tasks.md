@@ -121,6 +121,7 @@ FastAPI will allow us to enable communication with our OCR service from other pr
 >
 > When the session shell uses the curl command, it requests data from our app's ASGI server Uvicorn. FastAPI responds to these API requests by returning a success message and a list of any videos and frames/
 6. Modify the simple_api.py so that it works correctly with your implementation and complete any TODO markers
+> ### Custom Endpoint (video/{vid}/frame/{num}/ocr):
 >```sh
 >   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 >                                  Dload  Upload   Total   Spent    Left  Speed

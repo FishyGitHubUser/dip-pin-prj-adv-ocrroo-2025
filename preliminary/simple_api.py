@@ -28,6 +28,7 @@ class VideoMetaData(BaseModel):
     duration_seconds: float
     _links: dict | None = None
 
+# Response structure (viewable in DOM)
 @app.get("/video")
 def list_videos():
     """List all available videos with HATEOAS-style links."""
@@ -86,9 +87,17 @@ def video_frame(vid: str, t: float):
       video.capture.release()
 
 # TODO: add endpoint to get ocr e.g. /video/{vid}/frame/{t}/ocr
+@app.get('/video/{vid}/frame/{num}/ocr')
+def frame_ocr(vid: str, num: int):
+    video = _open_vid_or_404(vid)
+    try:
+        return video.get_frame_text(num)
+    finally:
+        video.capture.release()
+
 @app.get('/img/{img}/ocr')
 def image_ocr(img: str):
     return get_image_text(img)
 
 if __name__ == '__main__':
-    print(image_ocr('output.png'))
+    print(frame_ocr('demo', 1006))
