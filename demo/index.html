@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>My Flask Web UI</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <h1>Welcome to my Flask Web UI!</h1>
@@ -14,6 +13,11 @@
     <button type="submit">Submit</button>
   </form>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+      fetch('http://127.0.0.1:8000/video/demo/frame/1006/ocr')
+        .then(response => response.json()) // Parse the JSON response
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+  </script>
 </body>
 </html>
