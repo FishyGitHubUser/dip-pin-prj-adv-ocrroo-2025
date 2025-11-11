@@ -65,5 +65,7 @@ What are the UI interaction patterns you will use in your project?
 
 Write down any AI prompts you came up with after your first session
 > 1. You are a professional web developer tuned for accessibility, analyse the core concepts of vision impaired accessibility then address the topics mentioned by analysing accessibility best practices. Take a break, then  double-check your answers and ensure you have addressed everything required, finally using your understanding of accessibility, include more issues that have not been addressed yet.
->  
-> 2. Using your previous answer, create a single pure HTML page that addresses all accessibility requirements previously mentioned. Ensure the website follows strict html syntax while meeting all requirements. You may add basic css if required.  
+>
+> 2. Using your previous answer, create a single pure HTML page that addresses all accessibility requirements previously mentioned. Ensure the website follows strict html syntax while meeting all requirements. You may add basic css if required.
+> 
+> 3. Compare ONLY the html code file to the accessibility analysis, in a table write down the issue and mark if the requirement was met, and add notes if there's anything that could be changed. Finally, what would you change or add to make it even more accessible.  
