@@ -7,12 +7,21 @@ Requirements
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi import Response
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pathlib import Path
 from library_basics import CodingVideo, get_image_text
 
 app = FastAPI()
 
+# Allowing front-end URI root URI to access the backend - This Bypasses CORS errors
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # Specify origins to allow access (e.g. http://localhost:5173)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # We'll create a lightweight "database" for our videos
 # You can add uploads later (not required for assessment)

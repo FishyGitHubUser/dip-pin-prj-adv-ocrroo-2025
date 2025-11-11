@@ -23,7 +23,7 @@ OUT_PATH = ROOT_PATH / Path("resources")
 VID_PATH = OUT_PATH / Path("oop.mp4")
 
 # Path to tesseract wrapper for Python
-pytesseract.pytesseract.tesseract_cmd = 'C:/Users/CASTLM/source/repos/Tesseract-OCR/tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = 'C:/Users/admin/AppData/Local/Programs/Tesseract-OCR/tesseract.exe'
 output_image = 'output.png'
 
 class CodingVideo:
