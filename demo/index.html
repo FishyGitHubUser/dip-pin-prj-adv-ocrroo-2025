@@ -1,23 +1,463 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My Flask Web UI</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Accessible Video + OCR App (Intro → App)</title>
+  <meta name="description" content="Accessible demo: intro page opens file explorer and redirects to app page with video player, settings, speed control and OCR textarea." />
+  <style>
+    /* Basic accessible styles */
+    :root{
+      --bg:#0b1221;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#0b84ff;
+      --focus: 3px solid #ffbf47; /* high contrast focus */
+      --max-width:1200px;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      color-scheme: light;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#07122a, #0b1b2e);}
+    a { color: var(--accent); }
+    .skip-link{
+      position:absolute;left:0;top:-40px;padding:8px 12px;background:#000;color:#fff;z-index:200;
+    }
+    .skip-link:focus{top:8px;outline:none;box-shadow:var(--focus)}
+    main{max-width:var(--max-width);margin:0 auto;padding:24px}
+    /* INTRO PAGE */
+    .page{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .bg-blur{
+      position:absolute;inset:0;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="100%" height="100%" fill="%230b1b2e"/></svg>');background-size:cover;filter:blur(8px) brightness(.6);transform:scale(1.05);z-index:0
+    }
+    .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px}
+    .intro-card{
+      z-index:10;background:rgba(255,255,255,0.98);color:#0b1221;border-radius:12px;padding:28px;width:min(720px,94%);max-width:92ch;box-shadow:0 10px 30px rgba(2,6,23,.6);text-align:center;
+      display:flex;flex-direction:column;gap:16px;align-items:center;
+    }
+    .intro-title{font-size:1.6rem;margin:0;color:#09273f}
+    .intro-desc{color:var(--muted);font-size:1rem;margin:0}
+    .big-open{
+      margin-top:10px;padding:12px 18px;border-radius:8px;background:var(--accent);color:#fff;border:0;cursor:pointer;font-size:1rem;
+      box-shadow:0 6px 14px rgba(11,132,255,.22);
+    }
+    .big-open:focus{outline:none;box-shadow:var(--focus)}
+    .full-click-target{
+      position:absolute;inset:0;z-index:5; /* catches clicks anywhere */
+      cursor:pointer;
+    }
+    /* APP PAGE layout */
+    .app-wrapper{display:none;min-height:100vh;flex-direction:column}
+    header.app-header{
+      display:flex;align-items:center;gap:12px;padding:12px 20px;background:#061125;color:#fff;border-bottom:1px solid rgba(255,255,255,.04);
+    }
+    .header-left{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+    .app-title{font-weight:600}
+    .settings-btn{
+      background:transparent;border:0;color:inherit;padding:6px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;
+    }
+    .settings-btn:focus{outline:none;box-shadow:var(--focus)}
+    nav[role="navigation"]{margin-left:auto}
+    main.app-main{display:flex;gap:20px;padding:24px;flex:1;align-items:flex-start}
+    .left-col{flex:1 1 50%;display:flex;flex-direction:column;gap:12px;align-items:center}
+    .right-col{flex:0 0 360px;display:flex;flex-direction:column;gap:12px}
+    /* Video styling */
+    .video-container{width:100%;max-width:760px;display:flex;flex-direction:column;align-items:center}
+    video{width:100%;height:auto;border-radius:8px;border:1px solid rgba(255,255,255,.06);background:#000}
+    .controls-row{display:flex;gap:12px;align-items:center;margin-top:8px}
+    .speed-label{font-size:0.95rem;color:var(--muted)}
+    input[type="range"]{width:160px}
+    /* Upload area */
+    .upload-field{display:flex;flex-direction:column;gap:8px;padding:12px;border:2px dashed rgba(11,132,255,.12);border-radius:8px}
+    .upload-btn{display:inline-flex;gap:8px;align-items:center;padding:10px;border-radius:8px;border:1px solid rgba(11,132,255,.12);background:#fff;color:#09273f;cursor:pointer}
+    .upload-btn:focus{outline:none;box-shadow:var(--focus)}
+    .ocr-area{display:flex;flex-direction:column;gap:6px}
+    textarea.ocr-text{min-height:140px;resize:vertical;padding:10px;border-radius:6px;border:1px solid #d1d5db}
+    label{font-weight:600}
+    footer.app-footer{padding:12px 20px;background:#061125;color:#aab3c2;border-top:1px solid rgba(255,255,255,.03)}
+    /* Small screens */
+    @media (max-width:880px){
+      main.app-main{flex-direction:column}
+      .right-col{width:100%;flex-basis:auto}
+    }
+    /* Focus-visible for keyboard users */
+    :focus{outline: none}
+    :focus-visible{box-shadow:var(--focus)}
+    /* High contrast link for skip and headings */
+    .sr-status{position:fixed;bottom:12px;left:12px;background:#0b84ff;color:#fff;padding:8px 12px;border-radius:8px;z-index:300}
+  </style>
 </head>
 <body>
-  <h1>Welcome to my Flask Web UI!</h1>
-  <p>This page is rendered by Flask using Jinja2 templates.</p>
+  <!-- Skip to main content -->
+  <a class="skip-link" href="#app-main">Skip to main content</a>
 
-  <form method="post" action="/submit">
-    <input type="text" name="username" placeholder="Enter your name">
-    <button type="submit">Submit</button>
-  </form>
+  <!-- Live region for announcements -->
+  <div id="announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- INTRO PAGE -->
+  <section id="intro" class="page" aria-labelledby="introTitle">
+    <div class="bg-blur" aria-hidden="true"></div>
+
+    <!-- A large focusable region that instructs user and opens file picker on click/keyboard -->
+    <button id="introClick" class="full-click-target" aria-label="Open file selector and go to the app page" title="Open file selector and go to the app page"></button>
+
+    <div class="intro-card" role="region" aria-labelledby="introTitle" aria-describedby="introDesc">
+      <h1 id="introTitle" class="intro-title">Accessible Video + OCR Demo</h1>
+      <p id="introDesc" class="intro-desc">
+        This accessible demo opens your device's file explorer. Select a video file to continue to the app page where you can play the video, change playback speed, upload another video, and paste or view OCR results.
+      </p>
+
+      <p style="margin:0;color:var(--muted);font-size:.95rem">
+        Tip: Press <kbd>Enter</kbd> or <kbd>Space</kbd>, or click anywhere on the page to open your file explorer.
+      </p>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="visibleOpen" class="big-open" type="button">Open file (or press anywhere)</button>
+        <button id="introHelp" class="big-open" style="background:#e6e9ee;color:#09273f" type="button">Accessibility information</button>
+      </div>
+      <p style="font-size:.85rem;color:var(--muted);margin:0">You can also use the upload control below to add or change files later.</p>
+
+      <!-- Hidden file input used to open OS file explorer (accepts video files) -->
+      <form id="uploaderForm" class="visually-hidden" aria-hidden="true">
+        <label for="fileInput" class="visually-hidden">Select a video file</label>
+        <input id="fileInput" name="media" type="file" accept="video/*" />
+      </form>
+    </div>
+  </section>
+
+  <!-- APP PAGE (initially hidden) -->
+  <section id="app" class="app-wrapper" aria-labelledby="appTitle" aria-hidden="true">
+    <header class="app-header" role="banner">
+      <div class="header-left">
+        <!-- Settings icon on left side -->
+        <button id="settingsBtn" class="settings-btn" aria-haspopup="true" aria-expanded="false" aria-controls="settingsPanel" title="Open settings" aria-label="Open settings">
+          <!-- accessible SVG icon -->
+          <svg width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="settingsTitle settingsDesc" focusable="false" style="display:block">
+            <title id="settingsTitle">Settings</title>
+            <desc id="settingsDesc">Open application settings</desc>
+            <path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7zM19.4 13.3c.04-.4.06-.8.06-1.3s-.02-.9-.06-1.3l2.1-1.6a.5.5 0 0 0 .12-.64l-2-3.4a.5.5 0 0 0-.6-.22l-2.5 1a9.2 9.2 0 0 0-2.3-1.3l-.4-2.6A.5.5 0 0 0 12.8 2h-4a.5.5 0 0 0-.5.42l-.4 2.6c-.8.3-1.6.7-2.3 1.3l-2.5-1a.5.5 0 0 0-.6.22l-2 3.4a.5.5 0 0 0 .12.64l2.1 1.6c-.04.4-.06.8-.06 1.3s.02.9.06 1.3L1.3 14.9a.5.5 0 0 0-.12.64l2 3.4c.14.24.44.33.69.22l2.5-1c.7.6 1.5 1 2.3 1.3l.4 2.6c.05.26.27.44.5.44h4c.23 0 .45-.18.5-.44l.4-2.6c.8-.3 1.6-.7 2.3-1.3l2.5 1c.25.11.55.02.69-.22l2-3.4a.5.5 0 0 0-.12-.64l-2.1-1.6z"></path>
+          </svg>
+        </button>
+        <h2 id="appTitle" class="app-title">Video Player & OCR</h2>
+      </div>
+
+      <nav role="navigation" aria-label="Main navigation">
+        <ul style="list-style:none;margin:0;padding:0;display:flex;gap:12px;align-items:center">
+          <li><a href="#app-main" style="color:inherit;text-decoration:none" aria-label="Go to main content">Main</a></li>
+          <li><a href="#uploadControl" style="color:inherit;text-decoration:none" id="jumpUpload">Upload</a></li>
+          <li><a href="#ocrText" style="color:inherit;text-decoration:none">OCR</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Optional settings panel (collapsible) -->
+    <div id="settingsPanel" role="region" aria-labelledby="settingsLabel" style="display:none;padding:12px;background:#071427;color:#fff">
+      <h3 id="settingsLabel" style="margin:0 0 8px 0">Settings</h3>
+      <p style="margin:0;color:var(--muted)">Playback and accessibility settings will go here. (Demo placeholder)</p>
+    </div>
+
+    <main id="app-main" class="app-main" role="main" tabindex="-1" aria-describedby="appDesc">
+      <div style="max-width:var(--max-width);margin:0 auto;width:100%">
+        <p id="appDesc" class="visually-hidden">Main application area: video on left, settings and upload on right. Use keyboard tab to access controls.</p>
+
+        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+          <!-- Left column: vertically aligned video player -->
+          <div class="left-col" aria-label="Video player column">
+            <div class="video-container" role="region" aria-labelledby="playerLabel">
+              <h3 id="playerLabel">Video Player</h3>
+
+              <!-- Accessible video element with captions track (may be empty until upload) -->
+              <video id="videoPlayer" controls preload="metadata" aria-describedby="videoDesc">
+                <track id="defaultCaptions" kind="captions" srclang="en" label="English captions">
+                <!-- Fallback text -->
+                Your browser does not support HTML5 video. Provide a downloadable file instead.
+              </video>
+
+              <div id="videoDesc" class="visually-hidden">Use the built-in controls to play, pause, and change volume. Playback speed control available on the right.</div>
+
+              <div class="controls-row" role="group" aria-label="Playback controls">
+                <label for="speed" class="speed-label">Playback speed</label>
+                <input id="speed" type="range" min="0.25" max="2" step="0.25" value="1" aria-valuemin="0.25" aria-valuemax="2" aria-valuenow="1" aria-label="Playback speed slider">
+                <output id="speedValue" aria-live="polite">1×</output>
+
+                <button id="muteBtn" type="button" aria-pressed="false" aria-label="Mute or unmute">Mute</button>
+              </div>
+
+              <!-- Transcript and captions link -->
+              <details>
+                <summary>Transcript / captions (show/hide)</summary>
+                <div id="transcript" tabindex="0" style="padding:8px;border-radius:6px;border:1px solid #e6e9ee;margin-top:8px;min-height:64px">
+                  No transcript available. Upload a video to automatically populate (OCR demo only).
+                </div>
+              </details>
+
+            </div>
+          </div>
+
+          <!-- Right column: settings, upload, OCR textarea -->
+          <aside class="right-col" role="complementary" aria-label="Video settings and upload">
+            <div id="uploadControl" class="upload-field" role="form" aria-labelledby="uploadLabel">
+              <h3 id="uploadLabel">Upload / Replace video</h3>
+
+              <!-- Visible upload button: triggers same file input used on intro -->
+              <div>
+                <label for="fileInputApp" class="visually-hidden">Upload a video file</label>
+                <button id="uploadBtn" class="upload-btn" type="button" aria-controls="fileInputApp" aria-haspopup="true">Upload video</button>
+                <!-- Hidden file input used for app upload (same as intro, but separate element for clarity) -->
+                <input id="fileInputApp" name="mediaApp" class="visually-hidden" type="file" accept="video/*" />
+              </div>
+
+              <div style="font-size:.9rem;color:var(--muted)">
+                Accepted formats: common video types. Captions may be provided by the file or a separate track.
+              </div>
+
+            </div>
+
+            <div class="ocr-area" aria-labelledby="ocrLabel">
+              <h3 id="ocrLabel">OCR / Recognized text</h3>
+              <label for="ocrText" class="visually-hidden">OCR results</label>
+              <textarea id="ocrText" class="ocr-text" placeholder="OCR results will appear here after video upload or paste. You can also paste text here." aria-describedby="ocrHelp"></textarea>
+              <div id="ocrHelp" style="font-size:.9rem;color:var(--muted)">This area accepts pasted OCR or manual text. For demo, select a video file — a simulated OCR message will appear.</div>
+
+              <button id="pasteBtn" type="button" class="upload-btn" style="margin-top:8px">Paste example OCR</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer" role="contentinfo">
+      <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;max-width:var(--max-width);margin:0 auto">
+        <div>Accessible Video + OCR Demo — built for keyboard and screen reader users.</div>
+        <div><a href="#intro" id="backToIntro" style="color:inherit">Back to intro</a></div>
+      </div>
+    </footer>
+  </section>
+
+  <!-- Small status visual for sighted keyboard users -->
+  <div id="statusVis" class="sr-status" aria-hidden="true" style="display:none">Status</div>
 
   <script>
-      fetch('http://127.0.0.1:8000/video/demo/frame/1006/ocr')
-        .then(response => response.json()) // Parse the JSON response
-        .then(data => console.log(data))
-        .catch(error => console.error('Error:', error));
+    /*
+      Accessibility-first JavaScript:
+      - Triggers file picker on click / keyboard from intro
+      - Loads chosen file into video player and shows app section
+      - Manages focus and aria-expanded/hidden states
+      - Announces updates in aria-live region
+      - Provides keyboard support and visible focus
+    */
+
+    (function(){
+      // Elements
+      const intro = document.getElementById('intro');
+      const app = document.getElementById('app');
+      const introClick = document.getElementById('introClick');
+      const visibleOpen = document.getElementById('visibleOpen');
+      const fileInput = document.getElementById('fileInput');       // intro file input
+      const fileInputApp = document.getElementById('fileInputApp'); // app file input
+      const announcer = document.getElementById('announcer');
+      const statusVis = document.getElementById('statusVis');
+      const appMain = document.getElementById('app-main');
+      const videoPlayer = document.getElementById('videoPlayer');
+      const speed = document.getElementById('speed');
+      const speedValue = document.getElementById('speedValue');
+      const muteBtn = document.getElementById('muteBtn');
+      const uploadBtn = document.getElementById('uploadBtn');
+      const pasteBtn = document.getElementById('pasteBtn');
+      const ocrText = document.getElementById('ocrText');
+      const settingsBtn = document.getElementById('settingsBtn');
+      const settingsPanel = document.getElementById('settingsPanel');
+      const backToIntro = document.getElementById('backToIntro');
+
+      // Utility to announce live messages
+      function announce(message){
+        if(!announcer) return;
+        announcer.textContent = message;
+        // visible status for sighted keyboard users
+        statusVis.textContent = message;
+        statusVis.style.display = 'block';
+        setTimeout(()=> statusVis.style.display = 'none', 3500);
+      }
+
+      // Open OS file picker: prefer app input if app visible otherwise intro input
+      function openFilePicker(preferApp=false){
+        if((app.getAttribute('aria-hidden') === 'false') || preferApp){
+          fileInputApp.click();
+        } else {
+          fileInput.click();
+        }
+      }
+
+      // When a file is chosen in either input - load video and switch to app view
+      function handleFileSelection(evt){
+        const f = evt.target.files && evt.target.files[0];
+        if(!f) {
+          announce('No file selected.');
+          return;
+        }
+        // Only accept video-like mime but don't block; rely on accept attribute
+        const url = URL.createObjectURL(f);
+        // Set video source
+        // Remove existing sources/tracks for cleanliness
+        while(videoPlayer.firstChild){
+          videoPlayer.removeChild(videoPlayer.firstChild);
+        }
+        const source = document.createElement('source');
+        source.src = url;
+        source.type = f.type || 'video/*';
+        videoPlayer.appendChild(source);
+
+        // Keep a captions <track> element in place (demo)
+        const track = document.createElement('track');
+        track.kind = 'captions';
+        track.srclang = 'en';
+        track.label = 'English captions';
+        track.default = false;
+        videoPlayer.appendChild(track);
+
+        // Load and set focus to video player
+        videoPlayer.load();
+
+        // Switch to app page (single-page UI)
+        showAppView();
+
+        // Announce change
+        announce('Video loaded. Focus moved to the player. Use the playback controls to play or change speed.');
+        // set focus to video player container for screen readers
+        videoPlayer.setAttribute('tabindex','0');
+        videoPlayer.focus();
+
+        // Simulate OCR result for demo (replace with real OCR pipeline as needed)
+        // For privacy: we don't do OCR here; we show a simulated message to demonstrate accessible updates.
+        setTimeout(()=>{
+          ocrText.value = 'Simulated OCR: (demo) - Recognized sample text from uploaded video. Replace with real OCR results from server or Web Worker.';
+          announce('OCR results added to text area.');
+        }, 800);
+      }
+
+      // Show/hide app view and intro
+      function showAppView(){
+        intro.setAttribute('aria-hidden','true');
+        intro.style.display = 'none';
+        app.style.display = 'flex';
+        app.setAttribute('aria-hidden','false');
+        document.documentElement.scrollTop = 0;
+        // Focus management: focus main app region
+        setTimeout(()=> appMain.focus(), 100);
+      }
+
+      function showIntroView(){
+        app.setAttribute('aria-hidden','true');
+        app.style.display = 'none';
+        intro.style.display = 'flex';
+        intro.setAttribute('aria-hidden','false');
+        setTimeout(()=> visibleOpen.focus(), 80);
+      }
+
+      // Attach event listeners
+      // Clicking anywhere on intro opens file picker
+      introClick.addEventListener('click', ()=> openFilePicker(false));
+      visibleOpen.addEventListener('click', ()=> openFilePicker(false));
+      // Also allow Enter/Space keyboard activation on the full-screen button (introClick is a <button> so it handles keyboard natively)
+      // Hook up file inputs
+      fileInput.addEventListener('change', handleFileSelection);
+      fileInputApp.addEventListener('change', handleFileSelection);
+
+      // Upload button on app page triggers app file input
+      uploadBtn.addEventListener('click', ()=> openFilePicker(true));
+      // Also the upload link in nav should focus the upload control
+      document.getElementById('jumpUpload').addEventListener('click', (e)=> {
+        e.preventDefault();
+        openFilePicker(true);
+      });
+
+      // Speed control binds to player
+      speed.addEventListener('input', (e)=>{
+        const v = parseFloat(e.target.value);
+        videoPlayer.playbackRate = v;
+        speedValue.textContent = v + '×';
+        speed.setAttribute('aria-valuenow', String(v));
+      });
+
+      // Mute/unmute button
+      muteBtn.addEventListener('click', ()=>{
+        videoPlayer.muted = !videoPlayer.muted;
+        muteBtn.setAttribute('aria-pressed', String(videoPlayer.muted));
+        muteBtn.textContent = videoPlayer.muted ? 'Unmute' : 'Mute';
+        announce(videoPlayer.muted ? 'Muted' : 'Unmuted');
+      });
+
+      // Paste example OCR (simulates adding OCR text)
+      pasteBtn.addEventListener('click', ()=>{
+        ocrText.value = 'Example OCR text pasted for demo. Replace with real OCR output.';
+        ocrText.focus();
+        announce('Example OCR text added to the OCR area.');
+      });
+
+      // Settings panel toggle (accessible)
+      settingsBtn.addEventListener('click', ()=>{
+        const open = settingsBtn.getAttribute('aria-expanded') === 'true';
+        settingsBtn.setAttribute('aria-expanded', String(!open));
+        if(!open){
+          settingsPanel.style.display = 'block';
+          settingsPanel.setAttribute('aria-hidden','false');
+          settingsPanel.querySelector('h3').focus?.();
+        } else {
+          settingsPanel.style.display = 'none';
+          settingsPanel.setAttribute('aria-hidden','true');
+          settingsBtn.focus();
+        }
+      });
+
+      // Back to intro
+      backToIntro.addEventListener('click', (e)=>{
+        e.preventDefault();
+        showIntroView();
+        announce('Returned to intro. Press anywhere to open the file selector.');
+      });
+
+      // Keyboard accessibility: space/enter on visibleOpen is native; ensure full-screen intro button works
+      // Ensure page loads with intro visible
+      document.addEventListener('DOMContentLoaded', ()=> {
+        // On page load, keep app hidden
+        intro.setAttribute('aria-hidden','false');
+        app.setAttribute('aria-hidden','true');
+        app.style.display = 'none';
+        visibleOpen.focus();
+        announce('Intro loaded. Press Enter or Space to open file explorer.');
+      });
+
+      // Prevent accidental drag-drop navigation losing focus - optionally accept drop onto upload
+      window.addEventListener('dragover', (e)=>e.preventDefault());
+      window.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        // For demo: if file(s) dropped, and first is video, load it
+        const f = e.dataTransfer.files && e.dataTransfer.files[0];
+        if(f){
+          // Create a DataTransfer-like FileList by assigning to file input (works in user gesture context in some browsers)
+          // For robust behavior, we call handleFileSelection directly with simulated event
+          // Simulate selection: create a fake event
+          const evt = { target: { files: e.dataTransfer.files } };
+          handleFileSelection(evt);
+        }
+      });
+
+      // Ensure visible focus for keyboard-only users who activate elements via mouse: already handled via CSS focus styles
+
+      // A small accessibility helper: if user navigates with Tab, add :focus-visible styling fallback
+      (function addFocusVisiblePolyfill(){
+        let keyboardMode = false;
+        function onKeyDown(e){
+          if(e.key === 'Tab' || e.key === 'Shift' || e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' '){
+            keyboardMode = true;
+            document.documentElement.classList.add('user-is-tabbing');
+          }
+        }
+        function onMouseDown(){ keyboardMode = false; document.documentElement.classList.remove('user-is-tabbing'); }
+        window.addEventListener('keydown', onKeyDown);
+        window.addEventListener('mousedown', onMouseDown);
+      })();
+
+    })();
   </script>
 </body>
 </html>
