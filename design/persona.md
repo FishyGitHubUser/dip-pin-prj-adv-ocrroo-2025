@@ -64,6 +64,11 @@ What are the UI interaction patterns you will use in your project?
 ## AI Prompts
 
 Write down any AI prompts you came up with after your first session
+> ### Full AI Conversation can be read
+> - [Offline - Copy of Conversation](ai_base-site.html)
+> - [Online - Original Conversation](https://chatgpt.com/share/691367e0-2128-8007-b586-7c14639a3460)
+>
+> ### Prompt Questions
 > 1. You are a professional web developer tuned for accessibility, analyse the core concepts of vision impaired accessibility then address the topics mentioned by analysing accessibility best practices. Take a break, then double-check your answers and ensure you have addressed everything required, finally using your understanding of accessibility, include more issues that have not been addressed yet.
 > <br><br>
 > 2. Using your previous answer, create a single pure HTML page that addresses all accessibility requirements previously mentioned, as well as the following requirements:
@@ -89,4 +94,3 @@ Write down any AI prompts you came up with after your first session
 > <br>
 > 3. Compare ONLY the html code file to the accessibility analysis, in a table write down the issue and mark if the requirement was met, and add notes if there's anything that could be changed. Finally, what would you change or add to make it even more accessible.
 > 
-> ### View [ChatGPT conversation](https://chatgpt.com/share/691367e0-2128-8007-b586-7c14639a3460).

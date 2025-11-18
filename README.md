@@ -1,10 +1,6 @@
 # Overview
 
-Include a brief overview of the project, include:
-
-- How do you deploy and run the project?
-- What are its core dependencies?
-- Who is it for and why?
+This app is designed to extracting text from any point of a given video, and translating it into screen reader friendly plain text.
 
 ## Project Setup on Windows
 > ### Install UV
@@ -15,19 +11,19 @@ Include a brief overview of the project, include:
 > - Activate venv as instructed by UV
 > 
 > ### Install Core Dependencies
-> - Install Pillow 
+> - Install Pillow: 
 > `uv add pillow`
 >
-> - Install Tesseract 
+> - Install Tesseract: 
 > `uv add pytesseract`
 > 
-> - Install OpenCV
+> - Install OpenCV:
 > `uv add opencv-python`
 > 
-> - Install FastAPI 
+> - Install FastAPI: 
 > `uv add fastapi --extra standard`
 > 
-> ### Install Tesseract Wrapper
+> ### Install Tesseract's Python Wrapper
 > - Python wrappers can be found here:https://github.com/UB-Mannheim/tesseract/wiki
 > - The version currently used: https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe
 > 
