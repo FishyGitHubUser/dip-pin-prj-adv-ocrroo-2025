@@ -182,7 +182,7 @@
 
               <!-- Accessible video element with captions track (may be empty until upload) -->
               <video id="videoPlayer" controls preload="metadata" aria-describedby="videoDesc">
-                <track id="defaultCaptions" kind="captions" srclang="en" label="English captions">
+                <!-- <track id="defaultCaptions" kind="captions" srclang="en" label="English captions"> -->
                 <!-- Fallback text -->
                 Your browser does not support HTML5 video. Provide a downloadable file instead.
               </video>
@@ -343,12 +343,14 @@
     source.type = f.type || 'video/*';
     videoPlayer.appendChild(source);
 
+    // TODO (personal): Somehow convert the given file into .vtt for captions
+    /* Browser captions and subtitles both requires the video's real text track file (WebVTT)
     const track = document.createElement('track');
     track.kind = 'captions';
     track.srclang = 'en';
     track.label = 'English captions';
     track.default = false;
-    videoPlayer.appendChild(track);
+    videoPlayer.appendChild(track); */
 
     videoPlayer.load();
 
@@ -444,12 +446,13 @@
     // URL Queries - https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/URLSearchParams
     const ocrUrl = new URL(`http://127.0.0.1:8000/video/${encodeURIComponent(uploadedVideoId)}/frame/${currentTime}/ocr`);
     ocrUrl.searchParams.append('high_contrast', highContrastMode);
+    console.log(ocrUrl)
 
     fetch(ocrUrl)
       .then(res => res.text())
       .then(text => {
+        console.log(text)
         ocrText.value = ocrText.value + text;
-        console.log(ocrText.value)
         //ocrText.focus();
         announce('OCR data fetched successfully.');
       })
@@ -526,29 +529,6 @@
   })();
 
 })();
-</script>
-
-    console.log(currentTime, highContrastMode); // e.g., 12.34 seconds
-
-    // API: Send Video
-    const file = document.getElementById('fileInput').files[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      fetch('http://127.0.0.1:8000/video/upload', {
-        method: 'POST',   // HTTP method here
-        body: formData     // Form data here
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log('Uploaded video:', data.id);
-      })
-      .catch(err => console.error(err));
-    }
-
-
-
   </script>
 </body>
 </html>
