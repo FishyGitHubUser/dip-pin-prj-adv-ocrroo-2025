@@ -516,6 +516,26 @@
     const highContrastMode = contrastToggle.dataset.pressed === "true" ? false : true;
 
     console.log(currentTime, highContrastMode); // e.g., 12.34 seconds
+
+    // API: Send Video
+    const file = document.getElementById('fileInput').files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      fetch('http://127.0.0.1:8000/video/upload', {
+        method: 'POST',   // HTTP method here
+        body: formData     // Form data here
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Uploaded video:', data.id);
+      })
+      .catch(err => console.error(err));
+    }
+
+
+
   </script>
 </body>
 </html>
