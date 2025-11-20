@@ -30,6 +30,13 @@ This app is designed to extracting text from any point of a given video, and tra
 > ### Run FastAPI (development mode)
 > - In your preferred shell: `uv run fastapi dev preliminary/simple_api.py`
 > 
+> NOTE: This command runs as a script or wrapper ONLY for direct API route testing, so there is no ASGI server running!
+> 
+> ### Run ASGI server Uvicorn
+> - In your preferred shell: `uvicorn preliminary.simple_api:app --reload --host 127.0.0.1 --port 8000`
+> 
+> NOTE: Specifying the host and port is not necessary, but it is suggested to reduce potential API communication issues.
+> 
 > ### Test Operations
 > - Open a shell session and enter: `curl 127.0.0.1:8000/video`
 > - If there's an output, you're ready to go! You can check other possible API commands at http://127.0.0.1:8000/docs.
