@@ -88,7 +88,7 @@
 </head>
 <body>
   <!-- Skip to main content -->
-  <a class="skip-link" href="#app-main">Skip to main content</a>
+  <!-- <a class="skip-link" href="#app-main">Skip to main content</a> -->
 
   <!-- Live region for announcements -->
   <div id="announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
@@ -98,10 +98,10 @@
     <div class="bg-blur" aria-hidden="true"></div>
 
     <!-- A large focusable region that instructs user and opens file picker on click/keyboard -->
-    <button id="introClick" class="full-click-target" aria-label="Open file selector and go to the app page" title="Open file selector and go to the app page"></button>
+    <button id="introClick" class="full-click-target" title="Open file selector and go to the app page"></button>
 
     <div class="intro-card" role="region" aria-labelledby="introTitle" aria-describedby="introDesc">
-      <h1 id="introTitle" class="intro-title">Accessible Video + OCR Demo</h1>
+      <h1 id="introTitle" class="intro-title">Accessible Video OCR</h1>
       <p id="introDesc" class="intro-desc">
         This accessible demo opens your device's file explorer. Select a video file to continue to the app page where you can play the video, change playback speed, upload another video, and paste or view OCR results.
       </p>
@@ -111,10 +111,10 @@
       </p>
 
       <div style="display:flex;gap:8px;align-items:center">
-        <button id="visibleOpen" class="big-open" type="button">Open file (or press anywhere)</button>
-        <button id="introHelp" class="big-open" style="background:#e6e9ee;color:#09273f" type="button">Accessibility information</button>
+        <button id="visibleOpen" class="big-open" type="button">Press Enter to open video file</button>
+        <button hidden id="introHelp" class="big-open" style="background:#e6e9ee;color:#09273f" type="button">Accessibility information</button>
       </div>
-      <p style="font-size:.85rem;color:var(--muted);margin:0">You can also use the upload control below to add or change files later.</p>
+      <!-- <p style="font-size:.85rem;color:var(--muted);margin:0">You can also use the upload control below to add or change files later.</p> -->
 
       <!-- Hidden file input used to open OS file explorer (accepts video files) -->
       <form id="uploaderForm" class="visually-hidden" aria-hidden="true">
@@ -132,7 +132,7 @@
         <button id="settingsBtn" class="settings-btn" aria-haspopup="true" aria-expanded="false" aria-controls="settingsPanel" title="Open settings" aria-label="Open settings">
           <!-- accessible SVG icon -->
           <svg width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="settingsTitle settingsDesc" focusable="false" style="display:block">
-            <title id="settingsTitle">Settings</title>
+            <!--  <title id="settingsTitle">Settings</title> -->
             <desc id="settingsDesc">Open application settings</desc>
             <path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7zM19.4 13.3c.04-.4.06-.8.06-1.3s-.02-.9-.06-1.3l2.1-1.6a.5.5 0 0 0 .12-.64l-2-3.4a.5.5 0 0 0-.6-.22l-2.5 1a9.2 9.2 0 0 0-2.3-1.3l-.4-2.6A.5.5 0 0 0 12.8 2h-4a.5.5 0 0 0-.5.42l-.4 2.6c-.8.3-1.6.7-2.3 1.3l-2.5-1a.5.5 0 0 0-.6.22l-2 3.4a.5.5 0 0 0 .12.64l2.1 1.6c-.04.4-.06.8-.06 1.3s.02.9.06 1.3L1.3 14.9a.5.5 0 0 0-.12.64l2 3.4c.14.24.44.33.69.22l2.5-1c.7.6 1.5 1 2.3 1.3l.4 2.6c.05.26.27.44.5.44h4c.23 0 .45-.18.5-.44l.4-2.6c.8-.3 1.6-.7 2.3-1.3l2.5 1c.25.11.55.02.69-.22l2-3.4a.5.5 0 0 0-.12-.64l-2.1-1.6z"></path>
           </svg>
@@ -140,19 +140,26 @@
         <h2 id="appTitle" class="app-title">Video Player & OCR</h2>
       </div>
 
-      <nav role="navigation" aria-label="Main navigation">
+      <!-- <nav role="navigation" aria-label="Main navigation">
         <ul style="list-style:none;margin:0;padding:0;display:flex;gap:12px;align-items:center">
           <li><a href="#app-main" style="color:inherit;text-decoration:none" aria-label="Go to main content">Main</a></li>
           <li><a href="#uploadControl" style="color:inherit;text-decoration:none" id="jumpUpload">Upload</a></li>
           <li><a href="#ocrText" style="color:inherit;text-decoration:none">OCR</a></li>
         </ul>
-      </nav>
+      </nav> -->
     </header>
 
     <!-- Optional settings panel (collapsible) -->
     <div id="settingsPanel" role="region" aria-labelledby="settingsLabel" style="display:none;padding:12px;background:#071427;color:#fff">
       <h3 id="settingsLabel" style="margin:0 0 8px 0">Settings</h3>
-      <p style="margin:0;color:var(--muted)">Playback and accessibility settings will go here. (Demo placeholder)</p>
+      <p style="margin:0;color:var(--muted)">Playback and accessibility options.</p>
+      <button id="contrastToggle"
+      class="upload-btn"
+      data-pressed="false"
+      type="button"
+      style="width:200px;margin-top:12px">
+        High Contrast: Off
+    </button>
     </div>
 
     <main id="app-main" class="app-main" role="main" tabindex="-1" aria-describedby="appDesc">
@@ -172,53 +179,53 @@
                 Your browser does not support HTML5 video. Provide a downloadable file instead.
               </video>
 
-              <div id="videoDesc" class="visually-hidden">Use the built-in controls to play, pause, and change volume. Playback speed control available on the right.</div>
+             <!-- <div id="videoDesc" class="visually-hidden">Use the built-in controls to play, pause, and change volume. Playback speed control available on the right.</div> -->
 
               <div class="controls-row" role="group" aria-label="Playback controls">
                 <label for="speed" class="speed-label">Playback speed</label>
                 <input id="speed" type="range" min="0.25" max="2" step="0.25" value="1" aria-valuemin="0.25" aria-valuemax="2" aria-valuenow="1" aria-label="Playback speed slider">
                 <output id="speedValue" aria-live="polite">1×</output>
 
-                <button id="muteBtn" type="button" aria-pressed="false" aria-label="Mute or unmute">Mute</button>
+                <!-- <button hidden id="muteBtn" type="button" aria-pressed="false" aria-label="Mute or unmute">Mute</button> -->
               </div>
 
               <!-- Transcript and captions link -->
-              <details>
+              <!-- <details>
                 <summary>Transcript / captions (show/hide)</summary>
                 <div id="transcript" tabindex="0" style="padding:8px;border-radius:6px;border:1px solid #e6e9ee;margin-top:8px;min-height:64px">
                   No transcript available. Upload a video to automatically populate (OCR demo only).
                 </div>
-              </details>
+              </details> -->
 
             </div>
           </div>
 
           <!-- Right column: settings, upload, OCR textarea -->
-          <aside class="right-col" role="complementary" aria-label="Video settings and upload">
-            <div id="uploadControl" class="upload-field" role="form" aria-labelledby="uploadLabel">
-              <h3 id="uploadLabel">Upload / Replace video</h3>
+          <aside class="right-col" role="complementary">
+            <!-- <div id="uploadControl" class="upload-field" role="form" aria-labelledby="uploadLabel">
+              <h3 id="uploadLabel">Upload / Replace video</h3> -->
 
               <!-- Visible upload button: triggers same file input used on intro -->
-              <div>
+              <!-- <div>
                 <label for="fileInputApp" class="visually-hidden">Upload a video file</label>
                 <button id="uploadBtn" class="upload-btn" type="button" aria-controls="fileInputApp" aria-haspopup="true">Upload video</button>
-                <!-- Hidden file input used for app upload (same as intro, but separate element for clarity) -->
-                <input id="fileInputApp" name="mediaApp" class="visually-hidden" type="file" accept="video/*" />
+                Hidden file input used for app upload (same as intro, but separate element for clarity) -->
+                <!-- <input id="fileInputApp" name="mediaApp" class="visually-hidden" type="file" accept="video/*" />
               </div>
 
               <div style="font-size:.9rem;color:var(--muted)">
                 Accepted formats: common video types. Captions may be provided by the file or a separate track.
               </div>
 
-            </div>
+            </div> -->
 
             <div class="ocr-area" aria-labelledby="ocrLabel">
-              <h3 id="ocrLabel">OCR / Recognized text</h3>
-              <label for="ocrText" class="visually-hidden">OCR results</label>
-              <textarea id="ocrText" class="ocr-text" placeholder="OCR results will appear here after video upload or paste. You can also paste text here." aria-describedby="ocrHelp"></textarea>
-              <div id="ocrHelp" style="font-size:.9rem;color:var(--muted)">This area accepts pasted OCR or manual text. For demo, select a video file — a simulated OCR message will appear.</div>
+              <button id="pasteBtn" type="button" class="upload-btn" style="margin-top:8px">Capture video's current text</button>
 
-              <button id="pasteBtn" type="button" class="upload-btn" style="margin-top:8px">Paste example OCR</button>
+              <!-- <h3 id="ocrLabel">OCR Recognized text</h3> -->
+              <!-- <label for="ocrText" class="visually-hidden">OCR results</label> -->
+              <textarea id="ocrText" class="ocr-text" placeholder="OCR results will appear here after video upload or paste. You can also edit and copy text here." aria-describedby="ocrHelp"></textarea>
+              <!-- <div id="ocrHelp" style="font-size:.9rem;color:var(--muted)">This area accepts pasted OCR or manual text. For demo, select a video file — a simulated OCR message will appear.</div> -->
             </div>
           </aside>
         </div>
@@ -260,7 +267,7 @@
       const videoPlayer = document.getElementById('videoPlayer');
       const speed = document.getElementById('speed');
       const speedValue = document.getElementById('speedValue');
-      const muteBtn = document.getElementById('muteBtn');
+      //const muteBtn = document.getElementById('muteBtn');
       const uploadBtn = document.getElementById('uploadBtn');
       const pasteBtn = document.getElementById('pasteBtn');
       const ocrText = document.getElementById('ocrText');
@@ -321,17 +328,17 @@
         showAppView();
 
         // Announce change
-        announce('Video loaded. Focus moved to the player. Use the playback controls to play or change speed.');
+        // announce('Video loaded. Focus moved to the player. Use the playback controls to play or change speed.');
         // set focus to video player container for screen readers
         videoPlayer.setAttribute('tabindex','0');
         videoPlayer.focus();
 
         // Simulate OCR result for demo (replace with real OCR pipeline as needed)
         // For privacy: we don't do OCR here; we show a simulated message to demonstrate accessible updates.
-        setTimeout(()=>{
+        /* setTimeout(()=>{
           ocrText.value = 'Simulated OCR: (demo) - Recognized sample text from uploaded video. Replace with real OCR results from server or Web Worker.';
           announce('OCR results added to text area.');
-        }, 800);
+        }, 800); */
       }
 
       // Show/hide app view and intro
@@ -346,12 +353,17 @@
       }
 
       function showIntroView(){
-        app.setAttribute('aria-hidden','true');
-        app.style.display = 'none';
-        intro.style.display = 'flex';
-        intro.setAttribute('aria-hidden','false');
-        setTimeout(()=> visibleOpen.focus(), 80);
-      }
+      app.setAttribute('aria-hidden','true');
+      app.style.display = 'none';
+      intro.style.display = 'flex';
+      intro.setAttribute('aria-hidden','false');
+
+      // 🔥 RESET FILE INPUTS so user can upload again
+      fileInput.value = "";
+      if (fileInputApp) fileInputApp.value = "";
+
+      setTimeout(()=> visibleOpen.focus(), 80);
+    }
 
       // Attach event listeners
       // Clicking anywhere on intro opens file picker
@@ -360,15 +372,22 @@
       // Also allow Enter/Space keyboard activation on the full-screen button (introClick is a <button> so it handles keyboard natively)
       // Hook up file inputs
       fileInput.addEventListener('change', handleFileSelection);
-      fileInputApp.addEventListener('change', handleFileSelection);
+      if (fileInputApp) {
+        fileInputApp.addEventListener('change', handleFileSelection);
+      }
 
       // Upload button on app page triggers app file input
-      uploadBtn.addEventListener('click', ()=> openFilePicker(true));
+      if (uploadBtn) {
+        uploadBtn.addEventListener('click', ()=> openFilePicker(true));
+      }
       // Also the upload link in nav should focus the upload control
-      document.getElementById('jumpUpload').addEventListener('click', (e)=> {
-        e.preventDefault();
-        openFilePicker(true);
-      });
+      const jumpUpload = document.getElementById('jumpUpload');
+      if (jumpUpload) {
+        jumpUpload.addEventListener('click', (e)=> {
+          e.preventDefault();
+          openFilePicker(true);
+        });
+      }
 
       // Speed control binds to player
       speed.addEventListener('input', (e)=>{
@@ -379,12 +398,14 @@
       });
 
       // Mute/unmute button
-      muteBtn.addEventListener('click', ()=>{
+      if (typeof muteBtn !== 'undefined' && muteBtn) {
+      muteBtn.addEventListener('click', ()=> {
         videoPlayer.muted = !videoPlayer.muted;
         muteBtn.setAttribute('aria-pressed', String(videoPlayer.muted));
         muteBtn.textContent = videoPlayer.muted ? 'Unmute' : 'Mute';
         announce(videoPlayer.muted ? 'Muted' : 'Unmuted');
       });
+    }
 
       // Paste example OCR (simulates adding OCR text)
       pasteBtn.addEventListener('click', ()=>{
@@ -408,6 +429,31 @@
         }
       });
 
+    // Settings Option: HIGH CONTRAST TOGGLE
+    let highContrastMode = false; // <-- This is the TRUE/FALSE your listeners can read
+
+    const contrastToggle = document.getElementById('contrastToggle');
+
+    if (contrastToggle) {
+      contrastToggle.addEventListener('click', () => {
+        highContrastMode = !highContrastMode; // flip state
+
+        // Update ARIA state for accessibility
+        contrastToggle.dataset.pressed = String(highContrastMode);
+
+        // Update button label text
+        contrastToggle.textContent = highContrastMode
+          ? "High Contrast: On"
+          : "High Contrast: Off";
+
+        // Optional: visually change the page
+        document.body.classList.toggle('high-contrast', highContrastMode);
+
+        // Announce change
+        //announce(`High contrast mode ${highContrastMode ? "enabled" : "disabled"}.`);
+      });
+    }
+
       // Back to intro
       backToIntro.addEventListener('click', (e)=>{
         e.preventDefault();
@@ -423,7 +469,7 @@
         app.setAttribute('aria-hidden','true');
         app.style.display = 'none';
         visibleOpen.focus();
-        announce('Intro loaded. Press Enter or Space to open file explorer.');
+        //announce('Intro loaded. Press Enter or Space to open file explorer.');
       });
 
       // Prevent accidental drag-drop navigation losing focus - optionally accept drop onto upload
@@ -458,6 +504,18 @@
       })();
 
     })();
+
+
+    // API: Get video time
+    const videoPlayer = document.getElementById('videoPlayer');
+
+    // Current playback time in seconds
+    const currentTime = videoPlayer.currentTime;
+
+    // API: Get high contrast bool
+    const highContrastMode = contrastToggle.dataset.pressed === "true" ? false : true;
+
+    console.log(currentTime, highContrastMode); // e.g., 12.34 seconds
   </script>
 </body>
 </html>
