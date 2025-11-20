@@ -6,7 +6,7 @@ Requirements
 """
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from fastapi import FastAPI, UploadFile, File
+from fastapi import UploadFile, File
 from fastapi import Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -82,6 +82,24 @@ def _meta(video: CodingVideo) -> VideoMetaData:
             duration_seconds=video.duration
     )
 
+@app.post("/video/upload/{vid}")
+async def upload_video(file: UploadFile = File()):
+    """
+    Receives a video from the client and saves it temporarily.
+    Returns an ID to access it later.
+    """
+    temp_path = ROOT_PATH / f"resources/uploads/{file.filename}"
+    temp_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Save file to disk
+    with temp_path.open("wb") as f:
+        content = await file.read()
+        f.write(content)
+
+    # Add to your video dict for demo purposes
+    VIDEOS[file.filename] = temp_path
+
+    return {"id": file.filename, "message": "Video uploaded successfully"}
 
 @app.get("/video/{vid}", response_model=VideoMetaData)
 def video(vid: str):
