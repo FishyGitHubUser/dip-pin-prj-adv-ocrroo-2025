@@ -11,7 +11,9 @@ from fastapi import Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pathlib import Path
-from library_basics import CodingVideo, get_image_text
+from preliminary.library_basics import CodingVideo, get_image_text
+import datetime
+
 
 app = FastAPI()
 
@@ -31,6 +33,13 @@ ROOT_PATH = Path(__file__).parents[1]
 VIDEOS: dict[str, Path] = {
     "demo": ROOT_PATH / Path("resources/oop.mp4")
 }
+
+# Recursive delete folder temp files - https://csatlas.com/python-remove-directory/\
+TEMP_PATH = ROOT_PATH / 'resources/uploads'
+if (Path(TEMP_PATH).exists()):
+    import shutil
+    mydir = TEMP_PATH
+    shutil.rmtree(mydir)
 
 class VideoMetaData(BaseModel):
     fps: float
@@ -105,7 +114,7 @@ def video(vid: str):
     finally:
         video.capture.release()
 
-
+# GET requests
 @app.get("/video/{vid}/frame/{t}", response_class=Response)
 def video_frame(vid: str, t: float):
     try:
@@ -113,6 +122,20 @@ def video_frame(vid: str, t: float):
         return Response(content=video.get_image_as_bytes(t), media_type="image/png")
     finally:
       video.capture.release()
+
+@app.get("/video/{vid}/frame/{t}/ocr", response_class=Response)
+# Queries are automatically split from the url if an arg matches (e.g. "?high_contrast=true" == high_contrast).
+def time_ocr(vid: str, t: float, high_contrast: bool = False):
+    try:
+        video = _open_vid_or_404(vid)
+        # Seconds to datetime - https://stackoverflow.com/questions/775049/how-do-i-convert-seconds-to-hours-minutes-and-seconds
+
+        formatted_text = (f'[{str(datetime.timedelta(seconds=t)).split('.')[0]}]\n' +
+                f'{video.get_frame_text(video.get_frame_number_at_time(t), high_contrast)}').strip()
+
+        return Response(content=formatted_text + '\n'*3, media_type="text/plain")
+    finally:
+        video.capture.release()
 
 # TODO: add endpoint to get ocr e.g. /video/{vid}/frame/{t}/ocr
 @app.get('/video/{vid}/frame/{num}/ocr')
@@ -125,7 +148,33 @@ def frame_ocr(vid: str, num: int):
 
 @app.get('/img/{img}/ocr')
 def image_ocr(img: str):
-    return get_image_text(img)
+    return Response(content=get_image_text(img), media_type="text/plain")
+
+
+# POST requests
+@app.post("/video/upload")
+# UploadFile stores files in memory up to 1MB. If a file exceed this, it is saved as a temporary file to disk.
+async def upload_video(file: UploadFile = File()):
+    """Save a user uploaded video file.
+
+    Users can upload a video file which is saved resources/uploads. The video path is stored in server memory.
+
+    Reference
+    ---------
+    https://fastapi.tiangolo.com/tutorial/request-files/#file-parameters-with-uploadfile
+    https://fastapi.tiangolo.com/reference/uploadfile/#fastapi.UploadFile.write
+    https://betterstack.com/community/guides/scaling-python/uploading-files-using-fastapi/
+
+    """
+    temp_path = ROOT_PATH / f"resources/uploads/{file.filename}"
+    # Must create the directory first
+    temp_path.parent.mkdir(parents=True, exist_ok=True)
+    with temp_path.open("wb") as f:
+        # Writes like a normal file
+        f.write(await file.read())
+    # Saves in memory - Disappears when server restarts
+    VIDEOS[file.filename] = temp_path
+    return {"id": file.filename, "message": "Video uploaded successfully"}
 
 if __name__ == '__main__':
     print(frame_ocr('demo', 1006))
