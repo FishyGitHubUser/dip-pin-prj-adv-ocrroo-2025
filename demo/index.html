@@ -112,6 +112,7 @@
       <h1 id="introTitle" class="intro-title">Accessible Video OCR</h1>
       <p id="introDesc" class="intro-desc">
         This accessible demo opens your device's file explorer. Select a video file to continue to the app page where you can play the video, change playback speed, upload another video, and paste or view OCR results.
+        All pages are navigable via the keyboard keys: <strong><kbd>ARROW-UP</kbd></strong>, <strong><kbd>ARROW-DOWN</kbd></strong>, <strong><kbd>ARROW-LEFT</kbd></strong>, <strong><kbd>ARROW-RIGHT</kbd></strong>, <strong><kbd>Tab</kbd></strong>, <strong><kbd>Enter</kbd></strong>, and <strong><kbd>Space</kbd></strong>.
       </p>
 
       <p style="margin:0;color:var(--muted);font-size:.95rem">
@@ -141,7 +142,6 @@
           <!-- accessible SVG icon -->
           <svg width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="settingsTitle settingsDesc" focusable="false" style="display:block">
             <!--  <title id="settingsTitle">Settings</title> -->
-            <desc id="settingsDesc">Open application settings</desc>
             <path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7zM19.4 13.3c.04-.4.06-.8.06-1.3s-.02-.9-.06-1.3l2.1-1.6a.5.5 0 0 0 .12-.64l-2-3.4a.5.5 0 0 0-.6-.22l-2.5 1a9.2 9.2 0 0 0-2.3-1.3l-.4-2.6A.5.5 0 0 0 12.8 2h-4a.5.5 0 0 0-.5.42l-.4 2.6c-.8.3-1.6.7-2.3 1.3l-2.5-1a.5.5 0 0 0-.6.22l-2 3.4a.5.5 0 0 0 .12.64l2.1 1.6c-.04.4-.06.8-.06 1.3s.02.9.06 1.3L1.3 14.9a.5.5 0 0 0-.12.64l2 3.4c.14.24.44.33.69.22l2.5-1c.7.6 1.5 1 2.3 1.3l.4 2.6c.05.26.27.44.5.44h4c.23 0 .45-.18.5-.44l.4-2.6c.8-.3 1.6-.7 2.3-1.3l2.5 1c.25.11.55.02.69-.22l2-3.4a.5.5 0 0 0-.12-.64l-2.1-1.6z"></path>
           </svg>
         </button>
@@ -191,7 +191,7 @@
 
               <div class="controls-row" role="group" aria-label="Playback controls">
                 <label for="speed" class="speed-label">Playback speed</label>
-                <input id="speed" type="range" min="0.1" max="5" step="0.5" value="1" aria-label="Playback speed slider">
+                <input id="speed" type="range" min="0.1" max="5" step="0.05" value="1" aria-label="Playback speed slider">
                 <output id="speedValue" class="speedValue">1×</output>
 
                 <!-- <button hidden id="muteBtn" type="button" aria-pressed="false" aria-label="Mute or unmute">Mute</button> -->
@@ -396,42 +396,13 @@
   const jumpUpload = document.getElementById('jumpUpload');
   if (jumpUpload) jumpUpload.addEventListener('click', (e)=> { e.preventDefault(); openFilePicker(true); });
 
-    function sanitizeSpeed(value) {
-      // Skip 0
-      if (value === 0) {
-        // Keep the previous direction if you like, or default to 0.5
-        return 0.5; // or -0.5 if you want to allow negative first
-      }
-      return value;
-    }
-
   // Speed changing - https://derekknox.com/articles/scrubbing-speed-js/
   speed.addEventListener('input', (e) => {
-   let prev = parseFloat(speed.dataset.prev || '1'); // previous value
-   let val = parseFloat(e.target.value); // current slider input
-   if (val < prev) {
-     // Decrementing
-     if (prev <= 1) {
-       val = Math.max(0.1, prev - 0.1); // decrement by 0.1 if <= 1
-     } else {
-       val = prev - 0.5; // decrement by 0.5 if > 1
-     }
-   } else if (val > prev) {
-     // Incrementing
-     if (prev < 1) {
-       val = Math.min(1, prev + 0.1); // increment by 0.1 if < 1
-     } else {
-       val = prev + 0.5; // increment by 0.5 if >= 1
-     }
-   }
+    let val = parseFloat(e.target.value); // current slider input
 
-  // Apply and reflect
-  val = Math.round(val * 10) / 10;
-  videoPlayer.playbackRate = val;
-  speed.value = val;
-  speed.dataset.prev = val;
-  speedValue.textContent = val + '×';
-  speed.setAttribute('aria-valuenow', String(val));
+    videoPlayer.playbackRate = val;
+    speed.value = val;
+    speedValue.textContent = val + '×';
 });
 
   // Fetch OCR from server
