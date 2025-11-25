@@ -27,12 +27,12 @@ Project Idea:
 upload a video, returns as video with code transcript, button for read aloud + shortcuts to copy and OCR?
 -	Video is uploaded via explorer / drag-n-drop
 -	When OCR is started, it reads and transcribes the video content
--	ARROW-UP- Increment faster video playback/speed
--	ARROW-DOWN		- Increment slower video playback/speed
--	ARROW-LEFT		- Skip back 10 seconds 
--	ARROW-RIGHT	 	- Skip forward 10 seconds 
--	Tab				- Increment page elements
--	Enter or Space		- Selects the hovered element
+-	**ARROW-UP**        		- Increment faster video playback/speed
+-	**ARROW-DOWN**				- Increment slower video playback/speed
+-	**ARROW-LEFT**				- Skip back 10 seconds 
+-	**ARROW-RIGHT**				- Skip forward 10 seconds 
+-	**Tab**						- Increment page elements
+-	**Enter** or **Space**		- Selects the hovered element
 
 
 

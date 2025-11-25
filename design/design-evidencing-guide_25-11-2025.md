@@ -66,30 +66,45 @@ You will validate your design by meeting with a user representative: the product
 > - [Savvy Wombat]
 > 
 > ### Design artefacts reviewed:
-> - a
+> - https://github.com/FishyGitHubUser/dip-pin-prj-adv-ocrroo-2025/commit/6695779ebad2f85690fb7980c3226fcc13d72983
 > 
 > ### Issues discussed:
-> -  (chore(site): transcript visibility button design ui-design)[]
+> - [chore(site): transcript visibility button design ui-design](https://github.com/FishyGitHubUser/dip-pin-prj-adv-ocrroo-2025/issues/4)
+> - [bugfix(site): navigation bugs](https://github.com/FishyGitHubUser/dip-pin-prj-adv-ocrroo-2025/issues/3)
+> - [chore(site): ocr button layout ui-design](https://github.com/FishyGitHubUser/dip-pin-prj-adv-ocrroo-2025/issues/2)
 > 
 > ### Feedback provided: 
 > - Tab navigation is good
 > - I trust that you have optimised it for audio feedback. 
-> - Being ablke to select, copy, remove the OCR output is a nice touch.
+> - Being able to select, copy, remove the OCR output is a nice touch.
 > - Customisation option usage unclear
 > - Playback speed does not synchronise between in-video option and outer-video option
 > - I want some option to customise the user interface, it should take input from the user and do something with it
 
 ##### What worked well
 
-- 
+- Tab navigation is good
+- I trust that you have optimised it for audio feedback. 
+- Being able to select, copy, remove the OCR output is a nice touch.
 
 ##### What could be improved
 
-- 
+- Customisation option usage unclear
+- Playback speed does not synchronise between in-video option and outer-video option
+- I want some option to customise the user interface, it should take input from the user and do something with it
+
+###### Additional accessibility options
+
+- Clear OCR log
+- Toggle timestamp
+- Toggle advanced playback visibility
+- Flip video and OCR elements
 
 ##### What will you change before the next meeting
 
-- 
+- Implement personalisation - Clear OCR log on upload
+- Implement user input - User specified playback speed
+- Clarify the site accessibility buttons
 
 ##### Were there any questions that needed to be discussed with the user
 
