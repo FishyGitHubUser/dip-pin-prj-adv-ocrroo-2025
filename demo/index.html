@@ -66,8 +66,22 @@
     .controls-row{display:flex;gap:12px;align-items:center;margin-top:8px}
     .speed-label{font-size:0.95rem;color:var(--muted)}
     input[type="range"]{width:160px}
+    /* Hide input arrows - https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_hide_arrow_number */
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
     .speedValue {
-        color: white;
+      background: transparent;
+      color: white;
+      border: 0;
+      overflow: hidden;
     }
     /* Upload area */
     .upload-field{display:flex;flex-direction:column;gap:8px;padding:12px;border:2px dashed rgba(11,132,255,.12);border-radius:8px}
@@ -203,8 +217,12 @@
 
               <div class="controls-row" role="group" aria-label="Playback controls">
                 <label for="speed" class="speed-label">Playback speed</label>
-                <input id="speed" type="range" min="0.1" max="5" step="0.05" value="1" aria-label="Playback speed slider">
-                <output id="speedValue" class="speedValue">1×</output>
+                <input id="speed" type="range" min="0.07" max="5" step="0.05" value="1" aria-label="Playback speed slider">
+                <div style="display:flex;justify-items:center;align-items:center">
+                  <!-- TODO (personal): Textarea does not scale with font sizes! -->
+                  <textarea id="speedValue" placeholder="1" class="speedValue" name="speedValue" maxlength="4" style="max-height:1rem;max-width:1.9rem;resize:none" oninput="this.value = this.value.replace(/[^.0-9\n]/g, '');"></textarea>
+                  <p class="speedValue" style="display:flex;min-height: auto; justify-content:center!important;text-align:center">×</p>
+                </div>
 
                 <!-- <button hidden id="muteBtn" type="button" aria-pressed="false" aria-label="Mute or unmute">Mute</button> -->
               </div>
@@ -367,7 +385,7 @@
 
     videoPlayer.load();
 
-    if (clearOCRLog) {
+    if(clearOCRLog) {
       ocrText.value = "";
     }
 
@@ -376,7 +394,7 @@
     videoPlayer.playbackRate = defaultSpeed;        // Reset video playback speed
     speed.value = defaultSpeed;                     // Reset slider value
     speed.dataset.prev = defaultSpeed;              // Reset slider internal step tracking
-    speedValue.textContent = defaultSpeed + '×';    // Reset output display
+    speedValue.textContent = defaultSpeed;          // Reset output display
 
     showAppView();
     videoPlayer.setAttribute('tabindex','0');
@@ -415,15 +433,60 @@
 
   // Speed changing - https://derekknox.com/articles/scrubbing-speed-js/
   speed.addEventListener('input', (e) => {
-    let val = parseFloat(e.target.value); // current slider input
+    let val = parseFloat(e.target.value).toFixed(2); // current slider input
+
+    // TODO (personal): Does not update the browser's PlaybackSpeed attribute
+    videoPlayer.playbackRate = val;
+    speed.value = val;
+    speedValue.value = speed.value.length > 1 ? val.toString() : val;
+  });
+
+  speedValue.addEventListener('input', (e) => {
+    let val = e.target.value < 0 ? parseFloat(e.target.value).toFixed(2) : e.target.value; // current slider input
+    // Automatically add decimals   - Not user friendly
+    // val = e.target.value < 0 ? `0${parseFloat(val).toFixed(2)}` : val;
+    //
+    // // Convert to decimal
+    // let digit = val.toString()[0]
+    // let decimals = val.toString()[1] + val.toString()[2]
+    // val = parseFloat(`${digit}.${decimals}`)
+
+    // Count decimals
+    let decimalCount = 0;
+    for (let i = 0; i < val.length; i++) {
+      if (val[i] === '.') {
+          decimalCount++;
+      }
+    }
+
+    if (decimalCount > 1) {
+        speedValue.value = val.slice(0, -1)
+        announce('Only 1 decimal allowed')
+        return;
+    }
+    if (Number.isNaN(val) || val === '.') {
+        return
+    }
+    if (val < speed.min && val != 0) {
+        val = speed.min
+        announce(`Video playing speed lower than ${speed.min} is not allowed, unless pausing with 0`);
+    }
+    if (val > speed.max) {
+        val = speed.max
+        announce(`Video playing speed higher than ${speed.max} is not allowed`);
+    }
 
     videoPlayer.playbackRate = val;
     speed.value = val;
-    speedValue.textContent = val + '×';
-});
+    speedValue.value = val.toString();
+  });
 
   // Fetch OCR from server
   pasteBtn.addEventListener('click', ()=>{
+    if(clearOCRLog) {
+      ocrText.value = "";
+    }
+
     if(!uploadedVideoId){
       announce('No video uploaded yet.');
       return;
