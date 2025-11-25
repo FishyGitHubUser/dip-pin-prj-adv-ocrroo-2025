@@ -66,7 +66,7 @@ You will validate your design by meeting with a user representative: the product
 > - [Savvy Wombat]
 > 
 > ### Design artefacts reviewed:
-> - https://github.com/FishyGitHubUser/dip-pin-prj-adv-ocrroo-2025/commit/6695779ebad2f85690fb7980c3226fcc13d72983
+> - [Reviewed Commit Point](https://github.com/FishyGitHubUser/dip-pin-prj-adv-ocrroo-2025/commit/6695779ebad2f85690fb7980c3226fcc13d72983)
 > 
 > ### Issues discussed:
 > - [chore(site): transcript visibility button design ui-design](https://github.com/FishyGitHubUser/dip-pin-prj-adv-ocrroo-2025/issues/4)

@@ -157,17 +157,29 @@
       </nav> -->
     </header>
 
+
     <!-- Optional settings panel (collapsible) -->
     <div id="settingsPanel" role="region" aria-labelledby="settingsLabel" style="display:none;padding:12px;background:#071427;color:#fff">
       <h3 id="settingsLabel" style="margin:0 0 8px 0">Settings</h3>
       <p style="margin:0;color:var(--muted)">Playback and accessibility options.</p>
-      <button id="contrastToggle"
-      class="upload-btn"
-      data-pressed="false"
-      type="button"
-      style="width:200px;margin-top:12px">
-        High Contrast: Off
-    </button>
+      <!-- TODO (personal): Accessibility options overflow should be scrollable - Must style or hide the scrollbars! -->
+      <div style="display:flex;gap:1rem;overflow:hidden;background:#071427;color:#fff">
+        <button id="clearOCRToggle"
+          class="upload-btn"
+          data-pressed="false"
+          type="button"
+          style="width:200px;margin-top:12px">
+            Clear OCR Log: Off
+        </button>
+
+        <button id="contrastToggle"
+          class="upload-btn"
+          data-pressed="false"
+          type="button"
+          style="width:200px;margin-top:12px">
+            High Contrast Processing: Off
+        </button>
+      </div>
     </div>
 
     <main id="app-main" class="app-main" role="main" tabindex="-1" aria-describedby="appDesc">
@@ -271,6 +283,7 @@
   const settingsBtn = document.getElementById('settingsBtn');
   const settingsPanel = document.getElementById('settingsPanel');
   const backToIntro = document.getElementById('backToIntro');
+  const clearOCRToggle = document.getElementById('clearOCRToggle');
   const contrastToggle = document.getElementById('contrastToggle');
 
   let uploadedVideoId = null;
@@ -323,7 +336,7 @@
   function handleFileSelection(evt){
     /* ONLY loads local video files
      *
-     *  The function is not asynchronous, so it does not have the ability to load more than a few seconds of video.
+     *  The function is not asynchronous, so it does not have the ability to load more than a few seconds of video from API.
      */
     const f = evt.target.files && evt.target.files[0];
     if(!f) {
@@ -353,6 +366,10 @@
     videoPlayer.appendChild(track); */
 
     videoPlayer.load();
+
+    if (clearOCRLog) {
+      ocrText.value = "";
+    }
 
     // TODO (personal): Update playback speed related elements using a function
     const defaultSpeed = '1';                       // Default playback speed
@@ -448,12 +465,23 @@
   });
 
   // High contrast toggle
+  let clearOCRLog = false;
+  if (clearOCRToggle) {
+    clearOCRToggle.addEventListener('click', () => {
+      clearOCRLog = !clearOCRLog;
+      clearOCRToggle.dataset.pressed = String(clearOCRLog);
+      clearOCRToggle.textContent = clearOCRLog ? "Clear OCR Log: On" : "Clear OCR Log: Off";
+      document.body.classList.toggle('clear-ocr-log', clearOCRLog);
+    });
+  }
+
+  // High contrast toggle
   let highContrastMode = false;
   if (contrastToggle) {
     contrastToggle.addEventListener('click', () => {
       highContrastMode = !highContrastMode;
       contrastToggle.dataset.pressed = String(highContrastMode);
-      contrastToggle.textContent = highContrastMode ? "High Contrast: On" : "High Contrast: Off";
+      contrastToggle.textContent = highContrastMode ? "High Contrast Processing: On" : "High Contrast Processing: Off";
       document.body.classList.toggle('high-contrast', highContrastMode);
     });
   }
