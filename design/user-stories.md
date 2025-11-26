@@ -20,13 +20,7 @@ As Savvy Wombat,
 I want to have my friends and caretaker also be able to use the app. They should be able to understand how it works, and be able to easily navigate the app,
 so that they can assist me in transcribing or playing the videos when I’m busy or have any difficulties.
 
-# Requirements:
-A blind coder needs a LOCAL app, which requires a LIVE Video Player front-end that uses OCR (object character recognition) to read videos. The app must communicate with a custom API:
-
-Project Idea:
-upload a video, returns as video with code transcript, button for read aloud + shortcuts to copy and OCR?
--	Video is uploaded via explorer / drag-n-drop
--	When OCR is started, it reads and transcribes the video content
+# Shortcuts
 -	**ARROW-UP**        		- Increment faster video playback/speed
 -	**ARROW-DOWN**				- Increment slower video playback/speed
 -	**ARROW-LEFT**				- Skip back 10 seconds 
