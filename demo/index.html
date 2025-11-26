@@ -395,7 +395,7 @@
     speed.value = defaultSpeed;                     // Reset slider value
     speed.dataset.prev = defaultSpeed;              // Reset slider internal step tracking
     speedValue.placeholder = defaultSpeed;          // Reset output display placeholder
-    speedValue.textContent = defaultSpeed;          // Reset output display
+    speedValue.value = defaultSpeed;          // Reset output display
 
     showAppView();
     videoPlayer.setAttribute('tabindex','0');
@@ -450,12 +450,15 @@
     videoPlayer.playbackRate = val;
     speed.value = val;
     speedValue.placeholder = val;
-    speedValue.value = speed.value.length > 1 ? val.toString() : val;
+    speedValue.value = val;
   });
 
   speedValue.addEventListener('input', (e) => {
     let val = e.target.value < 0 ? parseFloat(e.target.value).toFixed(2) : e.target.value; // current slider input
 
+    if (Number.isNaN(val) || val === '' || val === '.') {
+        return;
+    }
     // Count decimals
     let decimalCount = 0;
     for(let i = 0; i < val.length; i++) {
@@ -463,19 +466,18 @@
           decimalCount++;
       }
     }
-
-    if (val.endsWith('.')) {
-        // Prevents playback speed slider misalignment
-        speed.value = val.slice(0, -1)
-        return;
-    }
     if (decimalCount > 1) {
-        speedValue.value = val.slice(0, -1)
-        announce('Only 1 decimal allowed')
+        speedValue.value = val.slice(0, -1);
+        announce('Only 1 decimal allowed');
         // TODO (personal): Return does/not stop the function executing!
         return;
     }
-    if (Number.isNaN(val) || val === '' || val === '.') {
+    if (val.endsWith('.')) {
+        // Prevents playback speed slider misalignment on trailing decimals
+
+        // Updates video's speed
+        videoPlayer.playbackRate = val.slice(0, -1);
+        speed.value = videoPlayer.playbackRate;
         return;
     }
     if (parseInt(val) < parseInt(speed.min) && val != 0) {
@@ -488,6 +490,8 @@
     }
     videoPlayer.playbackRate = val;
     speed.value = val;
+    // Displays the actual speed set if there's misalignment of the speed and slider
+    //console.log(speed.value);
     speedValue.placeholder = val;
     speedValue.value = val.toString();
   });
