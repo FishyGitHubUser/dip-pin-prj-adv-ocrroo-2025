@@ -394,6 +394,7 @@
     videoPlayer.playbackRate = defaultSpeed;        // Reset video playback speed
     speed.value = defaultSpeed;                     // Reset slider value
     speed.dataset.prev = defaultSpeed;              // Reset slider internal step tracking
+    speedValue.placeholder = defaultSpeed;          // Reset output display placeholder
     speedValue.textContent = defaultSpeed;          // Reset output display
 
     showAppView();
@@ -435,9 +436,10 @@
   speed.addEventListener('input', (e) => {
     let val = parseFloat(e.target.value).toFixed(2); // current slider input
 
-    // TODO (personal): Does not update the browser's PlaybackSpeed attribute
+    // TODO (personal): Does not update the browser's in-built playback speed attribute
     videoPlayer.playbackRate = val;
     speed.value = val;
+    speedValue.placeholder = val;
     speedValue.value = speed.value.length > 1 ? val.toString() : val;
   });
 
@@ -459,25 +461,31 @@
       }
     }
 
+    if (val.endsWith('.')) {
+        // Prevents playback speed slider misalignment
+        speed.value = val.slice(0, -1)
+        return;
+    }
     if (decimalCount > 1) {
         speedValue.value = val.slice(0, -1)
         announce('Only 1 decimal allowed')
+        // TODO (personal): Return does/not stop the function executing!
         return;
     }
-    if (Number.isNaN(val) || val === '.') {
-        return
+    if (Number.isNaN(val) || val === '' || val === '.') {
+        return;
     }
-    if (val < speed.min && val != 0) {
-        val = speed.min
+    if (parseInt(val) < parseInt(speed.min) && val != 0) {
+        val = speed.min;
         announce(`Video playing speed lower than ${speed.min} is not allowed, unless pausing with 0`);
     }
-    if (val > speed.max) {
-        val = speed.max
+    if (Number.parseInt(val) > Number.parseInt(speed.max)) {
+        val = speed.max;
         announce(`Video playing speed higher than ${speed.max} is not allowed`);
     }
-
     videoPlayer.playbackRate = val;
     speed.value = val;
+    speedValue.placeholder = val;
     speedValue.value = val.toString();
   });
 
