@@ -419,7 +419,7 @@
     intro.style.display = 'flex';
     intro.setAttribute('aria-hidden','false');
     fileInput.value = "";
-    if (fileInputApp) fileInputApp.value = "";
+    if(fileInputApp) fileInputApp.value = "";
     setTimeout(()=> visibleOpen.focus(), 80);
   }
 
@@ -427,14 +427,24 @@
   introClick.addEventListener('click', ()=> openFilePicker(false));
   visibleOpen.addEventListener('click', ()=> openFilePicker(false));
   fileInput.addEventListener('change', handleFileSelection);
-  if (fileInputApp) fileInputApp.addEventListener('change', handleFileSelection);
-  if (uploadBtn) uploadBtn.addEventListener('click', ()=> openFilePicker(true));
+  if(fileInputApp) fileInputApp.addEventListener('change', handleFileSelection);
+  if(uploadBtn) uploadBtn.addEventListener('click', ()=> openFilePicker(true));
   const jumpUpload = document.getElementById('jumpUpload');
-  if (jumpUpload) jumpUpload.addEventListener('click', (e)=> { e.preventDefault(); openFilePicker(true); });
+  if(jumpUpload) jumpUpload.addEventListener('click', (e)=> { e.preventDefault(); openFilePicker(true); });
 
   // Speed changing - https://derekknox.com/articles/scrubbing-speed-js/
   speed.addEventListener('input', (e) => {
     let val = parseFloat(e.target.value).toFixed(2); // current slider input
+
+    // Validates video playback speed slider in-case speed values exceed min and max
+    if(val < speed.min && val != 0) {
+        val = speed.min;
+        announce(`Video playing speed lower than ${speed.min} is not allowed, unless pausing with 0`);
+    }
+    if(val > speed.max) {
+        val = speed.max;
+        announce(`Video playing speed higher than ${speed.max} is not allowed`);
+    }
 
     // TODO (personal): Does not update the browser's in-built playback speed attribute
     videoPlayer.playbackRate = val;
@@ -445,18 +455,11 @@
 
   speedValue.addEventListener('input', (e) => {
     let val = e.target.value < 0 ? parseFloat(e.target.value).toFixed(2) : e.target.value; // current slider input
-    // Automatically add decimals   - Not user friendly
-    // val = e.target.value < 0 ? `0${parseFloat(val).toFixed(2)}` : val;
-    //
-    // // Convert to decimal
-    // let digit = val.toString()[0]
-    // let decimals = val.toString()[1] + val.toString()[2]
-    // val = parseFloat(`${digit}.${decimals}`)
 
     // Count decimals
     let decimalCount = 0;
-    for (let i = 0; i < val.length; i++) {
-      if (val[i] === '.') {
+    for(let i = 0; i < val.length; i++) {
+      if(val[i] === '.') {
           decimalCount++;
       }
     }
@@ -505,12 +508,12 @@
     // URL Queries - https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/URLSearchParams
     const ocrUrl = new URL(`http://127.0.0.1:8000/video/${encodeURIComponent(uploadedVideoId)}/frame/${currentTime}/ocr`);
     ocrUrl.searchParams.append('high_contrast', highContrastMode);
-    console.log(ocrUrl)
+    console.log(ocrUrl);
 
     fetch(ocrUrl)
       .then(res => res.text())
       .then(text => {
-        console.log(text)
+        console.log(text);
         ocrText.value = ocrText.value + text;
         //ocrText.focus();
         announce('OCR data fetched successfully.');
@@ -535,9 +538,9 @@
     }
   });
 
-  // High contrast toggle
+  // Clear OCR Log toggle
   let clearOCRLog = false;
-  if (clearOCRToggle) {
+  if(clearOCRToggle) {
     clearOCRToggle.addEventListener('click', () => {
       clearOCRLog = !clearOCRLog;
       clearOCRToggle.dataset.pressed = String(clearOCRLog);
@@ -548,7 +551,7 @@
 
   // High contrast toggle
   let highContrastMode = false;
-  if (contrastToggle) {
+  if(contrastToggle) {
     contrastToggle.addEventListener('click', () => {
       highContrastMode = !highContrastMode;
       contrastToggle.dataset.pressed = String(highContrastMode);
