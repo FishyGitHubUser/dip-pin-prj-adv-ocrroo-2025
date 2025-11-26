@@ -549,6 +549,7 @@
       clearOCRLog = !clearOCRLog;
       clearOCRToggle.dataset.pressed = String(clearOCRLog);
       clearOCRToggle.textContent = clearOCRLog ? "Clear OCR Log: On" : "Clear OCR Log: Off";
+      // Toggle a CSS class based on the bool state - Can be used to flip the colour of the button when enabled/disabled
       document.body.classList.toggle('clear-ocr-log', clearOCRLog);
     });
   }

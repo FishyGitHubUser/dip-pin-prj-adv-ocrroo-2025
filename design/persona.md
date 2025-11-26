@@ -16,7 +16,7 @@ Write a brief persona of your user using design thinking. You can use the follow
 - **Frustrations**: [Bad hair days, Lack of clear and accessible learning resources and technologies, Pickles]
 - **Motivations**: [Wants to become a millionaire before 50, Determined to prove her place in society, Waking up to eggs and breakfast]
 - **Technology**: [Solidworks 365, Fusion 360, Excel, Pycharm, Adobe, Draw.io]
-- **Experience**: [Experience of the user]
+- **Experience**: [None]
 - **Personality**: [Cheerfully looking forward to challenges and puzzles, Struggles to comprehend sarcasm]
 - **Interests**: [Puzzles, Food and animals, Programming, Drawing snails]
 
