@@ -130,8 +130,14 @@ def time_ocr(vid: str, t: float, high_contrast: bool = False):
         video = _open_vid_or_404(vid)
         # Seconds to datetime - https://stackoverflow.com/questions/775049/how-do-i-convert-seconds-to-hours-minutes-and-seconds
 
-        formatted_text = (f'[{str(datetime.timedelta(seconds=t)).split('.')[0]}]\n' +
-                f'{video.get_frame_text(video.get_frame_number_at_time(t), high_contrast)}').strip()
+        timestamp = str(datetime.timedelta(seconds=t)).split('.')[0]
+        captured_text = video.get_frame_text(video.get_frame_number_at_time(t), high_contrast)
+
+        if not captured_text:
+            captured_text = 'No text was captured'
+
+        formatted_text = (f'[{timestamp}]\n' +
+                          f'{captured_text}').strip()
 
         return Response(content=formatted_text + '\n'*3, media_type="text/plain")
     finally:
