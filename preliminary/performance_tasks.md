@@ -30,29 +30,47 @@ Complete the steps below and fill in the `> block` sections
 1. Examine the `pyproject.toml` what dependencies does it currently identify?
 > There is currently nothing in the dependencies because this is a brand new project.
 >
+
 2. Create a `.venv` in this folder using `uv venv`
 3. Activate the `venv` as instructed by `uv`
 4. In order to complete the project, we need to install OpenCV. Fill in the following:
   - What role does OpenCV have in this project?
-  > OpenCV is used for splitting a video into individual frames that can be saved as an image.
+  > OpenCV is used for handling video related tasks, like splitting a video into individual frames, 
+  > getting the details of a video like FPS, and converting color and their format.
   - What is the `uv pip` command to install OpenCV?
   > `uv pip install opencv-python`
   - What is the URL of this library's git repo?
   > [https://github.com/opencv/opencv-python](https://github.com/opencv/opencv-python)
+
 5. Add OpenCV to your project using the `uv add` command:
   > `uv add opencv-python`
 
 6. Have the dependencies in the `pyproject.toml` changed? If so, how?
   > The dependencies now require the latest version of opencv for python which is 4.12.0.88
   > 
-  > This is the line that was added in: `"opencv-python>=4.12.0.88",` 
+  > This is the line that was added in: `"opencv-python>=4.12.0.88",`
+
 7. Why did we use `uv add` over `uv pip`?
   > We use `uv add` because it adds OpenCV to the pyproject.toml dependencies. 
-  > Additionally, this states the version required to run the project. 
+  > Additionally, this states the version installed whilst running the project. 
+  > This helps ensure we are installing the right version with no breaking changes that may come from any future updates
+  > to the dependencies.
   >
+
 8. The `numpy` library is required for OpenCV. Should you add an explicit requirement for it? Why/Why not?
-  > It should be added to ensure that the version of OpenCV can run and interpret numpy's ndarrays as intended.
+  > The dependency should **not** be added because it is already a requirement installed by OpenCV. If we state a numpy 
+  > dependency not used by OpenCV, the package manager may try and resolve this by installing a version that could 
+  > satisfy both requirements, though it may choose a version not specified by the developer or OpenCV. 
+  > 
+  > If a new numpy dependency is added which does not support OpenCV's requirements, it can potentially cause version 
+  > conflicts, breaking changes, or path issues.
+  > 
+  > ### References: 
+  > - [Installing Dependencies](https://docs.astral.sh/uv/concepts/projects/dependencies/#adding-dependencies)
+  > - [Numpy as a dependency](https://community.shotgridsoftware.com/t/importing-opencv-and-numpy/8621/2)
+  > 
   >
+
 9. Commit the changes so far to git. Use the message `chore: add OpenCV dependency`
 10. Go to `preliminary/library_basics.py` and complete the required functionality.
 11. Commit your changes with `feat: save video frames`
@@ -82,9 +100,14 @@ Tesseract consists of both an OCR Engine and a command line program. It is predo
 >   * python_requires>=3.9
 >   
 > 
-> - how does it suite the project requirements
->   * It  supports all image types of Pillow libraries, as well as being able to run it as a standalone script.
->     It also prints the recognised text, instead of writing a new file, making debugging easier.
+> - how does it suit the project requirements
+>   * It  **supports all image types** of Pillow libraries
+>   * It is able to **run as a standalone script** in the 
+>   command line. Allowing for easy testing, and optional modularity if needed.
+>   * It **returns the recognised text**, and supports printing it which can help with debugging or formatting.
+>   * It is still **actively maintained** with decent documentation
+>   * It is **simpler** than other python wrappers which are designed for heavy workloads rather than standalone files.
+>
 
 4. Use UV to add the dependency to your project and your `pyproject.toml`
 
@@ -119,31 +142,37 @@ FastAPI will allow us to enable communication with our OCR service from other pr
 > - Uvicorn
 > - FastAPI
 >
-> When the session shell uses the curl command, it requests data from our app's ASGI server Uvicorn. FastAPI responds to these API requests by returning a success message and a list of any videos and frames/
+> When the curl command is used, it requests resources and data from our app's ASGI server Uvicorn. FastAPI processes 
+> these API requests and responds with a list of videos with the name their associated with, the resource URI, and the 
+> route related to the video.
 6. Modify the simple_api.py so that it works correctly with your implementation and complete any TODO markers
 > ### Custom Endpoint (video/{vid}/frame/{num}/ocr):
 >```sh
+> $  curl http://127.0.0.1:8000/video/demo/frame/42/ocr
 >   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 >                                  Dload  Upload   Total   Spent    Left  Speed
 > 100    83  100    83    0     0    406      0 --:--:-- --:--:-- --:--:--   406"I finally saw The Matrix today.\nIt was the best documentary\nI've ever seen.\n\n"
 >```
 8. Demonstrate the use of at least two other end points below:
 > > ### Endpoint 1 (video/{vid}):
-> > $ curl http://127.0.0.1:8000/video/demo/frame/42 --output resources/output.png
 > > ```sh
+> > $ curl http://127.0.0.1:8000/video/demo
 > >   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 > >                                  Dload  Upload   Total   Spent    Left  Speed
 > > 100    83  100    83    0     0   5007      0 --:--:-- --:--:-- --:--:--  5187{"fps":23.976023976023978,"frame_count":15152,"duration_seconds":631.9646666666666}
 >> ```
 > 
 > > ### Endpoint 2: (video/{vid}/frame/{t})
+> > **Note:** Hide image output with `$ curl http://127.0.0.1:8000/video/demo/frame/42 --output resources/output.png`
+> >
 > > ```sh
-> > $ curl http://127.0.0.1:8000/video/demo/frame/42 --output resources/output.png
-> >  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+> > $ curl http://127.0.0.1:8000/video/demo/frame/42
+> >   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 > >                                  Dload  Upload   Total   Spent    Left  Speed
-> > 100  3
+> > 100  311k  100  311k    0     0  2143k      0 --:--:-- --:--:-- --:--:-- 2146k
 > > ```
 > > 
-> > **Output File:**
+> > **Image Output:**
 > >
 > > ![output.png](../resources/output.png)
+> >
