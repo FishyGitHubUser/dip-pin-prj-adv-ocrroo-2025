@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Accessible Video + OCR App (Intro → App)</title>
+  <title id="pageTitle">Accessible Video OCR App (Intro Page)</title>
   <meta name="description" content="Accessible demo: intro page opens file explorer and redirects to app page with video player, settings, speed control and OCR textarea." />
   <style>
     /* Basic accessible styles */
@@ -198,7 +198,7 @@
 
     <main id="app-main" class="app-main" role="main" tabindex="-1" aria-describedby="appDesc">
       <div style="margin:0;padding:0;width:55vw">
-        <p id="appDesc" class="visually-hidden">Main application area: video on left, and settings on right. Use keyboard tab to access controls.</p>
+        <p id="appDesc" class="visually-hidden">Main application area. video and speed controls are followed by OCR tools. Use keyboard tab to access controls.</p>
 
         <div class="main-wrap" style="display:flex;width:55vw;flex-wrap:nowrap;align-items:flex-start">
           <!-- Left column: vertically aligned video player -->
@@ -283,6 +283,7 @@
 
   <script>
 (function(){
+  const pageTitle = document.getElementById('pageTitle');
   const intro = document.getElementById('intro');
   const app = document.getElementById('app');
   const introClick = document.getElementById('introClick');
@@ -411,6 +412,8 @@
     app.setAttribute('aria-hidden','false');
     document.documentElement.scrollTop = 0;
     setTimeout(()=> appMain.focus(), 100);
+    // Update page name - Read aloud if switching app focus (including file explorer)
+    pageTitle.textContent = 'Accessible Video OCR App (Video Player)'
   }
 
   function showIntroView(){
@@ -421,6 +424,7 @@
     fileInput.value = "";
     if(fileInputApp) fileInputApp.value = "";
     setTimeout(()=> visibleOpen.focus(), 80);
+    pageTitle.textContent = 'Accessible Video OCR App (Intro Page)'
   }
 
   // Event listeners
