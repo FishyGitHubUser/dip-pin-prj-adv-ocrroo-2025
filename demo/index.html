@@ -308,14 +308,26 @@
   let uploadedVideoId = null;
 
   // Visual Message Card
-  function announce(message){
-    if(!announcer) return;
-    announcer.textContent = message;
-    statusVis.textContent = message;
-    statusVis.style.display = 'block';
-    // Timeout - https://www.w3schools.com/jsref/met_win_settimeout.asp
-    setTimeout(()=> statusVis.style.display = 'none', 3500);
-  }
+  class Announcer {
+      constructor(announcerElement, statusElement, timeout = 3500) {
+        this.announcer = announcerElement;
+        this.statusVis = statusElement;
+        this.timeout = timeout;
+      }
+
+      announce(message) {
+        if (!this.announcer || !this.statusVis) return;
+
+        this.announcer.textContent = message;
+        this.statusVis.textContent = message;
+        this.statusVis.style.display = 'block';
+
+        setTimeout(() => {
+          this.statusVis.style.display = 'none';
+        }, this.timeout);
+      }
+    }
+    const announcement = new Announcer(announcer, statusVis);
 
   // Upload video to server
   // API fetch - https://realpython.com/flask-javascript-frontend-for-rest-api/
@@ -333,11 +345,11 @@
     .then(res => res.json())
     .then(data => {
       uploadedVideoId = data.id; // store returned video ID
-      announce(`Video uploaded successfully: ${file.name}`);
+      announcement.announce(`Video uploaded successfully: ${file.name}`);
     })
     .catch(err => {
       console.error(err);
-      announce('Video upload failed.');
+      announcement.announce('Video upload failed.');
     });
   }
 
@@ -359,7 +371,7 @@
      */
     const f = evt.target.files && evt.target.files[0];
     if(!f) {
-      announce('No file selected.');
+      announcement.announce('No file selected.');
       return;
     }
 
@@ -443,11 +455,11 @@
     // Validates video playback speed slider in-case speed values exceed min and max
     if(val < speed.min && val != 0) {
         val = speed.min;
-        announce(`Video playing speed lower than ${speed.min} is not allowed, unless pausing with 0`);
+        announcement.announce(`Video playing speed lower than ${speed.min} is not allowed, unless pausing with 0`);
     }
     if(val > speed.max) {
         val = speed.max;
-        announce(`Video playing speed higher than ${speed.max} is not allowed`);
+        announcement.announce(`Video playing speed higher than ${speed.max} is not allowed`);
     }
 
     // TODO (personal): Does not update the browser's in-built playback speed attribute
@@ -472,7 +484,7 @@
     }
     if (decimalCount > 1) {
         speedValue.value = val.slice(0, -1);
-        announce('Only 1 decimal allowed');
+        announcement.announce('Only 1 decimal allowed');
         // TODO (personal): Return does/not stop the function executing!
         return;
     }
@@ -486,11 +498,11 @@
     }
     if (parseInt(val) < parseInt(speed.min) && val != 0) {
         val = speed.min;
-        announce(`Video playing speed lower than ${speed.min} is not allowed, unless pausing with 0`);
+        announcement.announce(`Video playing speed lower than ${speed.min} is not allowed, unless pausing with 0`);
     }
     if (Number.parseInt(val) > Number.parseInt(speed.max)) {
         val = speed.max;
-        announce(`Video playing speed higher than ${speed.max} is not allowed`);
+        announcement.announce(`Video playing speed higher than ${speed.max} is not allowed`);
     }
     videoPlayer.playbackRate = val;
     speed.value = val;
@@ -507,7 +519,7 @@
     }
 
     if(!uploadedVideoId){
-      announce('No video uploaded yet.');
+      announcement.announce('No video uploaded yet.');
       return;
     }
     // https://stackoverflow.com/questions/77518586/how-can-i-continuously-get-a-html-videos-current-time
@@ -524,11 +536,11 @@
         console.log(text);
         ocrText.value = ocrText.value + text;
         //ocrText.focus();
-        announce('OCR data fetched successfully.');
+        announcement.announce('OCR data fetched successfully.');
       })
       .catch(err => {
         console.error(err);
-        announce('Failed to fetch OCR data.');
+        announcement.announce('Failed to fetch OCR data.');
       });
   });
 
@@ -572,7 +584,7 @@
   backToIntro.addEventListener('click', (e)=>{
     e.preventDefault();
     showIntroView();
-    announce('Returned to intro. Press anywhere to open the file selector.');
+    announcement.announce('Returned to intro. Press anywhere to open the file selector.');
   });
 
   document.addEventListener('DOMContentLoaded', ()=>{
